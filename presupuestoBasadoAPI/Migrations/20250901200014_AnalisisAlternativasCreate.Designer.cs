@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace presupuestoBasadoAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250901200014_AnalisisAlternativasCreate")]
+    partial class AnalisisAlternativasCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,7 +270,8 @@ namespace presupuestoBasadoAPI.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("Presupuesto")
                         .HasColumnType("int");
@@ -678,44 +682,6 @@ namespace presupuestoBasadoAPI.Migrations
                     b.ToTable("EfectosSuperiores");
                 });
 
-            modelBuilder.Entity("presupuestoBasadoAPI.Models.FilaMatriz", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Indicadores")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MatrizIndicadoresId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Medios")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Nivel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResumenNarrativo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Supuestos")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MatrizIndicadoresId");
-
-                    b.ToTable("FilaMatriz");
-                });
-
             modelBuilder.Entity("presupuestoBasadoAPI.Models.IdentificacionDescripcionProblema", b =>
                 {
                     b.Property<int>("Id")
@@ -815,39 +781,6 @@ namespace presupuestoBasadoAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("JustificacionProgramas");
-                });
-
-            modelBuilder.Entity("presupuestoBasadoAPI.Models.MatrizIndicadores", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ProgramaPresupuestario")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProgramaSectorial")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ResponsableMIR")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UnidadPresupuestal")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UnidadResponsable")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MatricesIndicadores");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.PadronBeneficiarios", b =>
@@ -1167,13 +1100,6 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasForeignKey("ArbolObjetivosId");
                 });
 
-            modelBuilder.Entity("presupuestoBasadoAPI.Models.FilaMatriz", b =>
-                {
-                    b.HasOne("presupuestoBasadoAPI.Models.MatrizIndicadores", null)
-                        .WithMany("Filas")
-                        .HasForeignKey("MatrizIndicadoresId");
-                });
-
             modelBuilder.Entity("presupuestoBasadoAPI.Models.ProgramaSocialCategoria", b =>
                 {
                     b.HasOne("presupuestoBasadoAPI.Models.ProgramaSocial", "ProgramaSocial")
@@ -1216,11 +1142,6 @@ namespace presupuestoBasadoAPI.Migrations
             modelBuilder.Entity("presupuestoBasadoAPI.Models.DisenoIntervencionPublica", b =>
                 {
                     b.Navigation("Componentes");
-                });
-
-            modelBuilder.Entity("presupuestoBasadoAPI.Models.MatrizIndicadores", b =>
-                {
-                    b.Navigation("Filas");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.ProgramaSocial", b =>

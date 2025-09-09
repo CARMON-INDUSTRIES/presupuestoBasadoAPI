@@ -12,18 +12,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PoblacionObjetivo> PoblacionObjetivo { get; set; }
     public DbSet<AnalisisEntorno> AnalisisEntorno { get; set; }
     public DbSet<UnidadAdministrativa> UnidadAdministrativas { get; set; }
-
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-
-        builder.Entity<UnidadAdministrativa>()
-            .HasMany(u => u.Usuarios)
-            .WithOne(u => u.UnidadAdministrativa)
-            .HasForeignKey(u => u.UnidadAdministrativaId)
-            .OnDelete(DeleteBehavior.Restrict); // O Cascade
-    }
-
     public DbSet<AlineacionEstado> AlineacionesEstado { get; set; }
     public DbSet<AlineacionMunicipio> AlineacionesMunicipio { get; set; }
     public DbSet<Ramo> Ramos { get; set; }
@@ -44,5 +32,26 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Resultado> Resultados { get; set; }
     public DbSet<EfectoSuperior> EfectosSuperiores { get; set; }
     public DbSet<ArbolObjetivos> ArbolObjetivos { get; set; }
+    public DbSet<AnalisisAlternativas> AnalisisAlternativas { get; set; } = default!;
+    public DbSet<AlternativaEvaluacion> AlternativasEvaluacion { get; set; } = default!;
+    public DbSet<MatrizIndicadores> MatricesIndicadores { get; set; }
+    public DbSet<FilaMatriz> FilaMatriz { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<AlternativaEvaluacion>()
+            .HasOne(a => a.Analisis)
+            .WithMany(x => x.Alternativas)
+            .HasForeignKey(a => a.AnalisisAlternativasId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<UnidadAdministrativa>()
+           .HasMany(u => u.Usuarios)
+           .WithOne(u => u.UnidadAdministrativa)
+           .HasForeignKey(u => u.UnidadAdministrativaId)
+           .OnDelete(DeleteBehavior.Restrict); // O Cascade
+    }
 
 }

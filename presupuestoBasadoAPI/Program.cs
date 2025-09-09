@@ -51,8 +51,14 @@ builder.Services.AddScoped<IPadronBeneficiariosService, PadronBeneficiariosServi
 builder.Services.AddScoped<IReglasOperacionService, ReglasOperacionService>();
 builder.Services.AddScoped<IArbolObjetivosService, ArbolObjetivosService>();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
 
-var jwtKey = builder.Configuration["Jwt:Key"]; // ⚠️ Debes definir Jwt:Key en appsettings.json
+var jwtKey = builder.Configuration["Jwt:Key"]; //Jwt:Key en appsettings.json
 if (string.IsNullOrEmpty(jwtKey))
 {
     throw new Exception("No se encontró la clave Jwt:Key en appsettings.json");
@@ -74,7 +80,7 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // 🔒 Evita redirect a /Account/Login
+    // Evita redirect a /Account/Login
     options.Events = new JwtBearerEvents
     {
         OnChallenge = context =>
