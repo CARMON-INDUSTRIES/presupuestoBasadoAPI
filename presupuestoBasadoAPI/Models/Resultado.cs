@@ -6,6 +6,8 @@
         public string Descripcion { get; set; } = string.Empty;
 
         public int ComponenteId { get; set; }
-        public Componente Componente { get; set; }
+        public Componente Componente { get; set; } = null!;
+        public string UserId { get; set; } = string.Empty;
+
     }
 }

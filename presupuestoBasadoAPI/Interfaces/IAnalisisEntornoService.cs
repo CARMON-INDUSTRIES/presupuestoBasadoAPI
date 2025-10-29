@@ -5,10 +5,8 @@ namespace presupuestoBasadoAPI.Interfaces
 {
     public interface IAnalisisEntornoService
     {
-        Task<AnalisisEntorno> CrearAsync(AnalisisEntornoDto dto);
-        Task<List<AnalisisEntorno>> ObtenerTodosAsync();
-        Task<AnalisisEntorno?> ObtenerPorIdAsync(int id);
-
+        Task<AnalisisEntorno> CrearAsync(AnalisisEntornoDto dto, string userId);
+        Task<List<AnalisisEntorno>> ObtenerTodosAsync(string userId);
+        Task<AnalisisEntorno?> ObtenerPorIdAsync(int id, string userId);
     }
-
 }

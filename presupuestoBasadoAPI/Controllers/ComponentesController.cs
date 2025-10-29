@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using presupuestoBasadoAPI.DTOs;
+using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Interfaces;
 
 namespace presupuestoBasadoAPI.Controllers

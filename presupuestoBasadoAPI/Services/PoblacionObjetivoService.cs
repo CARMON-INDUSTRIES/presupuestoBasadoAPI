@@ -14,9 +14,11 @@ namespace presupuestoBasadoAPI.Services
             _context = context;
         }
 
-        public async Task<List<PoblacionObjetivo>> ObtenerTodosAsync()
+        public async Task<List<PoblacionObjetivo>> ObtenerTodosAsync(string userId)
         {
-            return await _context.PoblacionObjetivo.ToListAsync();
+            return await _context.PoblacionObjetivo
+                .Where(p => p.UserId == userId)  // 🔹 filtrar por usuario
+                .ToListAsync();
         }
 
         public async Task<PoblacionObjetivo?> ObtenerPorIdAsync(int id)
@@ -31,13 +33,22 @@ namespace presupuestoBasadoAPI.Services
                 GrupoPoblacional = dto.GrupoPoblacional,
                 AmbitoGeografico = dto.AmbitoGeografico,
                 CriteriosSeleccion = dto.CriteriosSeleccion,
-                FechaCreacion = DateTime.Now
+                FechaCreacion = DateTime.Now,
+                UserId = dto.UserId // 🔹 asociar usuario
             };
 
             _context.PoblacionObjetivo.Add(entidad);
             await _context.SaveChangesAsync();
 
             return entidad;
+        }
+
+        public async Task<PoblacionObjetivo?> ObtenerUltimoAsync(string userId)
+        {
+            return await _context.PoblacionObjetivo
+                .Where(p => p.UserId == userId) // 🔹 filtrar por usuario
+                .OrderByDescending(p => p.Id)
+                .FirstOrDefaultAsync();
         }
     }
 }

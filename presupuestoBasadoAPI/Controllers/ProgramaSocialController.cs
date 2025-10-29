@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Interfaces;
+using System.Security.Claims;
 
 namespace presupuestoBasadoAPI.Controllers
 {
@@ -15,17 +16,21 @@ namespace presupuestoBasadoAPI.Controllers
             _service = service;
         }
 
+        // POST
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ProgramaSocialDto dto)
         {
-            var creado = await _service.CrearAsync(dto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // 🔹 obtenemos el usuario actual
+            var creado = await _service.CrearAsync(dto, userId);
             return Ok(creado);
         }
 
+        // GET ULTIMO
         [HttpGet("ultimo")]
         public async Task<IActionResult> ObtenerUltimo()
         {
-            var data = await _service.ObtenerUltimoAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // 🔹 filtramos por usuario
+            var data = await _service.ObtenerUltimoAsync(userId);
             if (data == null) return NotFound();
             return Ok(data);
         }

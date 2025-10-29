@@ -6,11 +6,11 @@ namespace presupuestoBasadoAPI.Services
 {
     public interface ICoberturaService
     {
-        Task<IEnumerable<CoberturaDto>> GetAllAsync();
-        Task<CoberturaDto> GetByIdAsync(int id);
-        Task<CoberturaDto> CreateAsync(CoberturaDto dto);
-        Task<bool> UpdateAsync(int id, CoberturaDto dto);
-        Task<bool> DeleteAsync(int id);
-        Task<CoberturaDto> GetUltimoAsync();
+        Task<IEnumerable<CoberturaDto>> GetAllAsync(string userId);
+        Task<CoberturaDto?> GetByIdAsync(int id, string userId);
+        Task<CoberturaDto> CreateAsync(CoberturaDto dto, string userId);
+        Task<bool> UpdateAsync(int id, CoberturaDto dto, string userId);
+        Task<bool> DeleteAsync(int id, string userId);
+        Task<CoberturaDto?> GetUltimoAsync(string userId);
     }
 }

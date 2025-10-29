@@ -18,5 +18,12 @@ namespace presupuestoBasadoAPI.Models
 
         // UnidadResponsable
         public UnidadAdministrativa UnidadAdministrativa { get; set; }
+
+
+        [ForeignKey("Entidad")]
+        [Column("EntidadId")]
+        public int? EntidadId { get; set; }
+
+        public Entidad Entidad { get; set; }
     }
 }

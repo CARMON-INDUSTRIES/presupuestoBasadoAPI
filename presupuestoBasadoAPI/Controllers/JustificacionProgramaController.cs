@@ -1,60 +1,56 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Interfaces;
+using presupuestoBasadoAPI.Models;
 
 namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // 🔹 Requiere token válido
     public class JustificacionProgramaController : ControllerBase
     {
         private readonly IJustificacionProgramaService _service;
-        private readonly AppDbContext _context;
 
-        public JustificacionProgramaController(IJustificacionProgramaService service, AppDbContext context)
+        public JustificacionProgramaController(IJustificacionProgramaService service)
         {
             _service = service;
-            _context = context;
         }
+
+        private string GetUserId() => User.Identity?.Name ?? "";
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] JustificacionProgramaDto dto)
         {
-            var resultado = await _service.CrearAsync(dto);
+            var resultado = await _service.CrearAsync(dto, GetUserId());
             return Ok(resultado);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<JustificacionProgramaDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<JustificacionPrograma>>> GetAll()
         {
-            var lista = await _service.ObtenerTodosAsync();
+            var lista = await _service.ObtenerTodosAsync(GetUserId());
             return Ok(lista);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<JustificacionProgramaDto>> GetById(int id)
+        public async Task<ActionResult<JustificacionPrograma>> GetById(int id)
         {
-            var resultado = await _service.ObtenerPorIdAsync(id);
+            var resultado = await _service.ObtenerPorIdAsync(id, GetUserId());
             if (resultado == null)
                 return NotFound();
             return Ok(resultado);
         }
 
         [HttpGet("ultimo")]
-        public async Task<ActionResult<JustificacionProgramaDto>> ObtenerUltimo()
+        public async Task<ActionResult<JustificacionPrograma>> ObtenerUltimo()
         {
-            var ultimo = await _context.JustificacionProgramas
-                .OrderByDescending(p => p.Id)
-                .FirstOrDefaultAsync();
-
+            var ultimo = await _service.ObtenerUltimoAsync(GetUserId());
             if (ultimo == null)
                 return NotFound("No se encontró ningún registro.");
-
             return Ok(ultimo);
         }
-
     }
-
 }

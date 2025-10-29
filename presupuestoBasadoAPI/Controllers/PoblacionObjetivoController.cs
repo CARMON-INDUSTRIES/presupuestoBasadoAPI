@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using presupuestoBasadoAPI.Dto;
@@ -9,20 +9,22 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PoblacionObjetivoController : ControllerBase
     {
         private readonly IPoblacionObjetivoService _service;
-        private readonly AppDbContext _context;
 
-        public PoblacionObjetivoController(IPoblacionObjetivoService service, AppDbContext context)
+        public PoblacionObjetivoController(IPoblacionObjetivoService service)
         {
             _service = service;
-            _context = context;
         }
+
+        private string GetUserId() => User.Identity?.Name ?? "";
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PoblacionObjetivoDto dto)
         {
+            dto.UserId = GetUserId(); // 🔹 asociar al usuario
             var resultado = await _service.CrearAsync(dto);
             return Ok(resultado);
         }
@@ -30,7 +32,8 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PoblacionObjetivo>>> GetAll()
         {
-            var lista = await _service.ObtenerTodosAsync();
+            var userId = GetUserId();
+            var lista = await _service.ObtenerTodosAsync(userId); // 🔹 filtrar por usuario
             return Ok(lista);
         }
 
@@ -44,18 +47,15 @@ namespace presupuestoBasadoAPI.Controllers
         }
 
         [HttpGet("ultimo")]
-        public async Task<ActionResult<PoblacionObjetivoDto>> ObtenerUltimo()
+        public async Task<ActionResult<PoblacionObjetivo>> ObtenerUltimo()
         {
-            var ultimo = await _context.PoblacionObjetivo
-                .OrderByDescending(p => p.Id)
-                .FirstOrDefaultAsync();
+            var userId = GetUserId();
+            var ultimo = await _service.ObtenerUltimoAsync(userId); // 🔹 filtrar por usuario
 
             if (ultimo == null)
-                return NotFound("No se encontró ningún registro.");
+                return NotFound("No se encontró ningún registro para el usuario.");
 
             return Ok(ultimo);
         }
-
     }
-
 }

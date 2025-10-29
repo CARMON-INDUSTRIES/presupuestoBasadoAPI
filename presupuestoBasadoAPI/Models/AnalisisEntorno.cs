@@ -7,6 +7,8 @@
         public string FactoresExternos { get; set; }            // Económicos, políticos, sociales, etc.
         public string RiesgosOportunidades { get; set; }        // Riesgos o fortalezas detectadas
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
+        public string UserId { get; set; } = string.Empty;
+
     }
 
 }

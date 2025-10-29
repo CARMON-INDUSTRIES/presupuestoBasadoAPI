@@ -8,6 +8,8 @@
         public string Estrategia { get; set; }
         public string LineaAccion { get; set; }
         public string Ramo { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+
 
     }
 }

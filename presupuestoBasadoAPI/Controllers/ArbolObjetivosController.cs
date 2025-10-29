@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using presupuestoBasadoAPI.Interfaces;
 using presupuestoBasadoAPI.Dto;
+using System.Security.Claims;
 
 namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ArbolObjetivosController : ControllerBase
     {
         private readonly IArbolObjetivosService _service;
@@ -15,10 +18,17 @@ namespace presupuestoBasadoAPI.Controllers
             _service = service;
         }
 
+        private string GetUserId()
+        {
+            return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                   ?? throw new UnauthorizedAccessException("No se pudo obtener el UserId del token.");
+        }
+
         [HttpGet("ultimo")]
         public async Task<IActionResult> GetUltimo()
         {
-            var result = await _service.GetUltimoAsync();
+            var userId = GetUserId();
+            var result = await _service.GetUltimoAsync(userId);
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -26,7 +36,8 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ArbolObjetivosDto dto)
         {
-            var result = await _service.CrearAsync(dto);
+            var userId = GetUserId();
+            var result = await _service.CrearAsync(dto, userId);
             return Ok(result);
         }
     }

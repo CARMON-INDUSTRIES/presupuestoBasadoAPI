@@ -21,6 +21,179 @@ namespace presupuestoBasadoAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("IndicadorDetalle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Cobertura")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Crema")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Definicion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Denominador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Dimension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FichaIndicadorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FrecuenciaMedicion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FuenteDenominador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FuenteNumerador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FuenteResultado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LineaBaseAnio")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LineaBasePeriodo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LineaBaseUnidad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("LineaBaseValor")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Nivel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Numerador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RangoValor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResultadoEsperado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sentido")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnidadMedida")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FichaIndicadorId");
+
+                    b.ToTable("IndicadoresDetalle");
+                });
+
+            modelBuilder.Entity("LineaAccion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Acuerdo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Estrategia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FichaIndicadorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LineaAccionTexto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Objetivo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ramo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FichaIndicadorId");
+
+                    b.ToTable("LineasAccion");
+                });
+
+            modelBuilder.Entity("MetaProgramada", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Alcanzado")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Cantidad")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CantidadEsperada")
+                        .HasColumnType("float");
+
+                    b.Property<int>("FichaIndicadorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Mes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MetaProgramadaNombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PeriodoCumplimiento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FichaIndicadorId");
+
+                    b.ToTable("MetasProgramadas");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -162,10 +335,17 @@ namespace presupuestoBasadoAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
                     b.Property<int>("ComponenteId")
                         .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -174,6 +354,48 @@ namespace presupuestoBasadoAPI.Migrations
                     b.HasIndex("ComponenteId");
 
                     b.ToTable("Acciones");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.AcuerdoEstatal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AcuerdoEstatal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.AcuerdoMunicipal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AcuerdoMunicipal");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.AlineacionEstado", b =>
@@ -201,6 +423,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ramo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -234,6 +460,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Ramo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -281,6 +511,10 @@ namespace presupuestoBasadoAPI.Migrations
                     b.Property<int>("Total")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AnalisisAlternativasId");
@@ -307,6 +541,10 @@ namespace presupuestoBasadoAPI.Migrations
 
                     b.Property<int>("TotalObtenido")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -336,6 +574,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("AnalisisEntorno");
@@ -362,6 +604,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProblematicaOrigen")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -396,6 +642,10 @@ namespace presupuestoBasadoAPI.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("EntidadId")
+                        .HasColumnType("int")
+                        .HasColumnName("EntidadId");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -452,6 +702,8 @@ namespace presupuestoBasadoAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EntidadId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -478,6 +730,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ObjetivoCentral")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -510,6 +766,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Subfuncion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -559,6 +819,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Coberturas");
@@ -576,6 +840,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -609,6 +877,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ArbolObjetivosId");
@@ -629,6 +901,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RelacionOtrosProgramas")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -653,6 +929,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("DisenoIntervencionPublicas");
@@ -673,9 +953,115 @@ namespace presupuestoBasadoAPI.Migrations
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("EfectosSuperiores");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Entidad", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Entidad");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.EstrategiaEstatal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ObjetivoEstatalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ObjetivoEstatalId");
+
+                    b.ToTable("EstrategiaEstatal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.EstrategiaMunicipal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ObjetivoMunicipalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ObjetivoMunicipalId");
+
+                    b.ToTable("EstrategiaMunicipal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.FichaIndicador", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaveIndicador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProgramaPresupuestario")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponsableMIR")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TipoIndicador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnidadPresupuestal")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnidadResponsable")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Fichas");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.FilaMatriz", b =>
@@ -709,11 +1095,54 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MatrizIndicadoresId");
 
                     b.ToTable("FilaMatriz");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Finalidad", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Finalidad");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Funcion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FinalidadId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FinalidadId");
+
+                    b.ToTable("Funcion");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.IdentificacionDescripcionProblema", b =>
@@ -756,6 +1185,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("IdentificacionDescripcionProblemas");
@@ -784,9 +1217,87 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("IdentificacionProblemas");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Indicador", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Cobertura")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Definicion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Denominador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Dimension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FichaIndicadorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FrecuenciaMedicion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fuentes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nivel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Numerador")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RangoValor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResultadoEsperado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sentido")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UnidadMedida")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FichaIndicadorId");
+
+                    b.ToTable("Indicadores");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.JustificacionPrograma", b =>
@@ -812,9 +1323,95 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("JustificacionProgramas");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.LineaBase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Anio")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IndicadorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Periodo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Unidad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IndicadorId")
+                        .IsUnique()
+                        .HasFilter("[IndicadorId] IS NOT NULL");
+
+                    b.ToTable("LineasBase");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.LineaDeAccionEstatal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EstrategiaEstatalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstrategiaEstatalId");
+
+                    b.ToTable("LineaDeAccionEstatal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.LineaDeAccionMunicipal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EstrategiaMunicipalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstrategiaMunicipalId");
+
+                    b.ToTable("LineaDeAccionMunicipal");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.MatrizIndicadores", b =>
@@ -845,9 +1442,90 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("MatricesIndicadores");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Meta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Cantidad")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("IndicadorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MetaProgramada")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PeriodoCumplimiento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IndicadorId");
+
+                    b.ToTable("Metas");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ObjetivoEstatal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AcuerdoEstatalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcuerdoEstatalId");
+
+                    b.ToTable("ObjetivoEstatal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ObjetivoMunicipal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AcuerdoMunicipalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcuerdoMunicipalId");
+
+                    b.ToTable("ObjetivoMunicipal");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.PadronBeneficiarios", b =>
@@ -866,6 +1544,10 @@ namespace presupuestoBasadoAPI.Migrations
 
                     b.Property<bool>("TienePadron")
                         .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -892,6 +1574,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("GrupoPoblacional")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -928,6 +1614,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Programas");
@@ -943,6 +1633,10 @@ namespace presupuestoBasadoAPI.Migrations
 
                     b.Property<bool>("EsProgramaSocial")
                         .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -968,11 +1662,54 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProgramaSocialId");
 
                     b.ToTable("ProgramaSocialCategorias");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ProgramacionMeta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Alcanzado")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Cantidad")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("IndicadorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Mes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Semaforo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IndicadorId");
+
+                    b.ToTable("ProgramacionesMetas");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.Ramo", b =>
@@ -995,6 +1732,10 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Ramos");
@@ -1009,19 +1750,53 @@ namespace presupuestoBasadoAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ArchivoAdjunto")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LigaInternet")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TieneReglasOperacion")
                         .HasColumnType("bit");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("ReglasOperacion");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ReglasOperacionDetalle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("OtrosSubsidios")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PrestacionServiciosPublicos")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProvisionBienesPublicos")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SujetoReglasOperacion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReglasOperacionDetalles");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.Resultado", b =>
@@ -1039,11 +1814,38 @@ namespace presupuestoBasadoAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ComponenteId");
+                    b.HasIndex("ComponenteId")
+                        .IsUnique();
 
                     b.ToTable("Resultados");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Subfuncion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FuncionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FuncionId");
+
+                    b.ToTable("SubFuncion");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.UnidadAdministrativa", b =>
@@ -1064,6 +1866,39 @@ namespace presupuestoBasadoAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UnidadAdministrativas");
+                });
+
+            modelBuilder.Entity("IndicadorDetalle", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.FichaIndicador", "FichaIndicador")
+                        .WithMany("Indicadores")
+                        .HasForeignKey("FichaIndicadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FichaIndicador");
+                });
+
+            modelBuilder.Entity("LineaAccion", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.FichaIndicador", "FichaIndicador")
+                        .WithMany("LineasAccion")
+                        .HasForeignKey("FichaIndicadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FichaIndicador");
+                });
+
+            modelBuilder.Entity("MetaProgramada", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.FichaIndicador", "FichaIndicador")
+                        .WithMany("MetasProgramadas")
+                        .HasForeignKey("FichaIndicadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FichaIndicador");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1141,10 +1976,17 @@ namespace presupuestoBasadoAPI.Migrations
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.ApplicationUser", b =>
                 {
+                    b.HasOne("presupuestoBasadoAPI.Models.Entidad", "Entidad")
+                        .WithMany("Usuarios")
+                        .HasForeignKey("EntidadId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("presupuestoBasadoAPI.Models.UnidadAdministrativa", "UnidadAdministrativa")
                         .WithMany("Usuarios")
                         .HasForeignKey("UnidadAdministrativaId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Entidad");
 
                     b.Navigation("UnidadAdministrativa");
                 });
@@ -1167,11 +2009,119 @@ namespace presupuestoBasadoAPI.Migrations
                         .HasForeignKey("ArbolObjetivosId");
                 });
 
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.EstrategiaEstatal", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.ObjetivoEstatal", "ObjetivoEstatal")
+                        .WithMany("Estrategias")
+                        .HasForeignKey("ObjetivoEstatalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ObjetivoEstatal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.EstrategiaMunicipal", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.ObjetivoMunicipal", "ObjetivoMunicipal")
+                        .WithMany("Estrategias")
+                        .HasForeignKey("ObjetivoMunicipalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ObjetivoMunicipal");
+                });
+
             modelBuilder.Entity("presupuestoBasadoAPI.Models.FilaMatriz", b =>
                 {
                     b.HasOne("presupuestoBasadoAPI.Models.MatrizIndicadores", null)
                         .WithMany("Filas")
                         .HasForeignKey("MatrizIndicadoresId");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Funcion", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.Finalidad", "Finalidad")
+                        .WithMany("Funciones")
+                        .HasForeignKey("FinalidadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Finalidad");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Indicador", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.FichaIndicador", "FichaIndicador")
+                        .WithMany()
+                        .HasForeignKey("FichaIndicadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FichaIndicador");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.LineaBase", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.Indicador", "Indicador")
+                        .WithOne("LineaBase")
+                        .HasForeignKey("presupuestoBasadoAPI.Models.LineaBase", "IndicadorId");
+
+                    b.Navigation("Indicador");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.LineaDeAccionEstatal", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.EstrategiaEstatal", "EstrategiaEstatal")
+                        .WithMany("LineasDeAccion")
+                        .HasForeignKey("EstrategiaEstatalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EstrategiaEstatal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.LineaDeAccionMunicipal", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.EstrategiaMunicipal", "EstrategiaMunicipal")
+                        .WithMany("LineasDeAccion")
+                        .HasForeignKey("EstrategiaMunicipalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EstrategiaMunicipal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Meta", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.Indicador", "Indicador")
+                        .WithMany("Metas")
+                        .HasForeignKey("IndicadorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Indicador");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ObjetivoEstatal", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.AcuerdoEstatal", "AcuerdoEstatal")
+                        .WithMany("Objetivos")
+                        .HasForeignKey("AcuerdoEstatalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AcuerdoEstatal");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ObjetivoMunicipal", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.AcuerdoMunicipal", "AcuerdoMunicipal")
+                        .WithMany("Objetivos")
+                        .HasForeignKey("AcuerdoMunicipalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AcuerdoMunicipal");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.ProgramaSocialCategoria", b =>
@@ -1185,15 +2135,45 @@ namespace presupuestoBasadoAPI.Migrations
                     b.Navigation("ProgramaSocial");
                 });
 
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ProgramacionMeta", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.Indicador", "Indicador")
+                        .WithMany("ProgramacionMetas")
+                        .HasForeignKey("IndicadorId");
+
+                    b.Navigation("Indicador");
+                });
+
             modelBuilder.Entity("presupuestoBasadoAPI.Models.Resultado", b =>
                 {
                     b.HasOne("presupuestoBasadoAPI.Models.Componente", "Componente")
-                        .WithMany("Resultados")
-                        .HasForeignKey("ComponenteId")
+                        .WithOne("Resultado")
+                        .HasForeignKey("presupuestoBasadoAPI.Models.Resultado", "ComponenteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Componente");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Subfuncion", b =>
+                {
+                    b.HasOne("presupuestoBasadoAPI.Models.Funcion", "Funcion")
+                        .WithMany("SubFunciones")
+                        .HasForeignKey("FuncionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Funcion");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.AcuerdoEstatal", b =>
+                {
+                    b.Navigation("Objetivos");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.AcuerdoMunicipal", b =>
+                {
+                    b.Navigation("Objetivos");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.AnalisisAlternativas", b =>
@@ -1210,7 +2190,7 @@ namespace presupuestoBasadoAPI.Migrations
                 {
                     b.Navigation("Acciones");
 
-                    b.Navigation("Resultados");
+                    b.Navigation("Resultado");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.DisenoIntervencionPublica", b =>
@@ -1218,9 +2198,63 @@ namespace presupuestoBasadoAPI.Migrations
                     b.Navigation("Componentes");
                 });
 
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Entidad", b =>
+                {
+                    b.Navigation("Usuarios");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.EstrategiaEstatal", b =>
+                {
+                    b.Navigation("LineasDeAccion");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.EstrategiaMunicipal", b =>
+                {
+                    b.Navigation("LineasDeAccion");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.FichaIndicador", b =>
+                {
+                    b.Navigation("Indicadores");
+
+                    b.Navigation("LineasAccion");
+
+                    b.Navigation("MetasProgramadas");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Finalidad", b =>
+                {
+                    b.Navigation("Funciones");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Funcion", b =>
+                {
+                    b.Navigation("SubFunciones");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.Indicador", b =>
+                {
+                    b.Navigation("LineaBase")
+                        .IsRequired();
+
+                    b.Navigation("Metas");
+
+                    b.Navigation("ProgramacionMetas");
+                });
+
             modelBuilder.Entity("presupuestoBasadoAPI.Models.MatrizIndicadores", b =>
                 {
                     b.Navigation("Filas");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ObjetivoEstatal", b =>
+                {
+                    b.Navigation("Estrategias");
+                });
+
+            modelBuilder.Entity("presupuestoBasadoAPI.Models.ObjetivoMunicipal", b =>
+                {
+                    b.Navigation("Estrategias");
                 });
 
             modelBuilder.Entity("presupuestoBasadoAPI.Models.ProgramaSocial", b =>

@@ -1,11 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using presupuestoBasadoAPI.Data;
-using presupuestoBasadoAPI.Dto;
-using presupuestoBasadoAPI.DTOs;
 using presupuestoBasadoAPI.Models;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using presupuestoBasadoAPI.Dto;
 
 namespace presupuestoBasadoAPI.Services
 {
@@ -13,18 +12,19 @@ namespace presupuestoBasadoAPI.Services
     {
         private readonly AppDbContext _context;
 
-        public DisenoIntervencionPublicaService(AppDbContext context)
+    public DisenoIntervencionPublicaService(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<DisenoIntervencionPublicaDto>> GetAllAsync()
+        public async Task<IEnumerable<DisenoIntervencionPublicaDto>> GetAllAsync(string userId)
         {
             return await _context.DisenoIntervencionPublicas
+                .Where(d => d.UserId == userId)
                 .Include(d => d.Componentes)
                     .ThenInclude(c => c.Acciones)
                 .Include(d => d.Componentes)
-                    .ThenInclude(c => c.Resultados)
+                    .ThenInclude(c => c.Resultado)
                 .Select(d => new DisenoIntervencionPublicaDto
                 {
                     Id = d.Id,
@@ -34,21 +34,29 @@ namespace presupuestoBasadoAPI.Services
                     {
                         Id = c.Id,
                         Nombre = c.Nombre,
-                        Acciones = c.Acciones.Select(a => a.Descripcion).ToList(),
-                        Resultados = c.Resultados.Select(r => r.Descripcion).ToList()
+                        Acciones = c.Acciones.Select(a => new AccionDto
+                        {
+                            Id = a.Id,
+                            Descripcion = a.Descripcion,
+                            Cantidad = a.Cantidad
+                        }).ToList(),
+                        Resultado = c.Resultado != null
+                            ? new ResultadoDto { Id = c.Resultado.Id, Descripcion = c.Resultado.Descripcion }
+                            : null
                     }).ToList()
                 })
                 .ToListAsync();
         }
 
-        public async Task<DisenoIntervencionPublicaDto> GetByIdAsync(int id)
+        public async Task<DisenoIntervencionPublicaDto?> GetByIdAsync(int id, string userId)
         {
             var d = await _context.DisenoIntervencionPublicas
+                .Where(x => x.UserId == userId && x.Id == id)
                 .Include(x => x.Componentes)
                     .ThenInclude(c => c.Acciones)
                 .Include(x => x.Componentes)
-                    .ThenInclude(c => c.Resultados)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                    .ThenInclude(c => c.Resultado)
+                .FirstOrDefaultAsync();
 
             if (d == null) return null;
 
@@ -61,23 +69,39 @@ namespace presupuestoBasadoAPI.Services
                 {
                     Id = c.Id,
                     Nombre = c.Nombre,
-                    Acciones = c.Acciones.Select(a => a.Descripcion).ToList(),
-                    Resultados = c.Resultados.Select(r => r.Descripcion).ToList()
+                    Acciones = c.Acciones.Select(a => new AccionDto
+                    {
+                        Id = a.Id,
+                        Descripcion = a.Descripcion,
+                        Cantidad = a.Cantidad
+                    }).ToList(),
+                    Resultado = c.Resultado != null
+                        ? new ResultadoDto { Id = c.Resultado.Id, Descripcion = c.Resultado.Descripcion }
+                        : null
                 }).ToList()
             };
         }
 
-        public async Task<DisenoIntervencionPublicaDto> CreateAsync(DisenoIntervencionPublicaDto dto)
+        public async Task<DisenoIntervencionPublicaDto> CreateAsync(DisenoIntervencionPublicaDto dto, string userId)
         {
             var d = new DisenoIntervencionPublica
             {
+                UserId = userId,
                 EtapasIntervencion = dto.EtapasIntervencion,
                 EscenariosFuturosEsperar = dto.EscenariosFuturosEsperar,
                 Componentes = dto.Componentes.Select(c => new Componente
                 {
                     Nombre = c.Nombre,
-                    Acciones = c.Acciones.Select(a => new Accion { Descripcion = a }).ToList(),
-                    Resultados = c.Resultados.Select(r => new Resultado { Descripcion = r }).ToList()
+                    Acciones = c.Acciones.Select(a => new Accion
+                    {
+                        Descripcion = a.Descripcion,
+                        Cantidad = a.Cantidad,
+                        UserId = userId
+                    }).ToList(),
+                    Resultado = c.Resultado != null
+                        ? new Resultado { Descripcion = c.Resultado.Descripcion, UserId = userId }
+                        : null,
+                    UserId = userId
                 }).ToList()
             };
 
@@ -88,64 +112,72 @@ namespace presupuestoBasadoAPI.Services
             return dto;
         }
 
-        public async Task<bool> UpdateAsync(int id, DisenoIntervencionPublicaDto dto)
+        public async Task<bool> UpdateAsync(int id, DisenoIntervencionPublicaDto dto, string userId)
         {
             var d = await _context.DisenoIntervencionPublicas
+                .Where(x => x.UserId == userId && x.Id == id)
                 .Include(x => x.Componentes)
                     .ThenInclude(c => c.Acciones)
                 .Include(x => x.Componentes)
-                    .ThenInclude(c => c.Resultados)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                    .ThenInclude(c => c.Resultado)
+                .FirstOrDefaultAsync();
 
             if (d == null) return false;
 
             d.EtapasIntervencion = dto.EtapasIntervencion;
             d.EscenariosFuturosEsperar = dto.EscenariosFuturosEsperar;
 
-            // Eliminar hijos existentes para reemplazar por el nuevo grafo
-            var accionesExistentes = d.Componentes.SelectMany(c => c.Acciones).ToList();
-            var resultadosExistentes = d.Componentes.SelectMany(c => c.Resultados).ToList();
-            _context.Acciones.RemoveRange(accionesExistentes);
-            _context.Resultados.RemoveRange(resultadosExistentes);
+            // Limpiar dependencias viejas
+            _context.Acciones.RemoveRange(d.Componentes.SelectMany(c => c.Acciones));
+            _context.Resultados.RemoveRange(d.Componentes.Where(c => c.Resultado != null).Select(c => c.Resultado));
             _context.Componentes.RemoveRange(d.Componentes);
             await _context.SaveChangesAsync();
 
-            // Agregar nueva colección
+            // Reemplazar con nuevos componentes
             d.Componentes = dto.Componentes.Select(c => new Componente
             {
                 Nombre = c.Nombre,
-                Acciones = c.Acciones.Select(a => new Accion { Descripcion = a }).ToList(),
-                Resultados = c.Resultados.Select(r => new Resultado { Descripcion = r }).ToList()
+                Acciones = c.Acciones.Select(a => new Accion
+                {
+                    Descripcion = a.Descripcion,
+                    Cantidad = a.Cantidad,
+                    UserId = userId
+                }).ToList(),
+                Resultado = c.Resultado != null
+                    ? new Resultado { Descripcion = c.Resultado.Descripcion, UserId = userId }
+                    : null,
+                UserId = userId
             }).ToList();
 
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, string userId)
         {
             var d = await _context.DisenoIntervencionPublicas
+                .Where(x => x.UserId == userId && x.Id == id)
                 .Include(x => x.Componentes)
                     .ThenInclude(c => c.Acciones)
                 .Include(x => x.Componentes)
-                    .ThenInclude(c => c.Resultados)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                    .ThenInclude(c => c.Resultado)
+                .FirstOrDefaultAsync();
 
             if (d == null) return false;
 
-            // Asegurar borrado en cascada de hijos
             _context.DisenoIntervencionPublicas.Remove(d);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<DisenoIntervencionPublicaDto> GetUltimoAsync()
+        public async Task<DisenoIntervencionPublicaDto?> GetUltimoAsync(string userId)
         {
             var d = await _context.DisenoIntervencionPublicas
+                .Where(x => x.UserId == userId)
                 .Include(x => x.Componentes)
                     .ThenInclude(c => c.Acciones)
                 .Include(x => x.Componentes)
-                    .ThenInclude(c => c.Resultados)
+                    .ThenInclude(c => c.Resultado)
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
 
@@ -160,10 +192,18 @@ namespace presupuestoBasadoAPI.Services
                 {
                     Id = c.Id,
                     Nombre = c.Nombre,
-                    Acciones = c.Acciones.Select(a => a.Descripcion).ToList(),
-                    Resultados = c.Resultados.Select(r => r.Descripcion).ToList()
+                    Acciones = c.Acciones.Select(a => new AccionDto
+                    {
+                        Id = a.Id,
+                        Descripcion = a.Descripcion,
+                        Cantidad = a.Cantidad
+                    }).ToList(),
+                    Resultado = c.Resultado != null
+                        ? new ResultadoDto { Id = c.Resultado.Id, Descripcion = c.Resultado.Descripcion }
+                        : null
                 }).ToList()
             };
         }
     }
+
 }

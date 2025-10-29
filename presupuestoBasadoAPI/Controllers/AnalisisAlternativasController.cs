@@ -1,24 +1,30 @@
-﻿// Controllers/AnalisisAlternativasController.cs
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using presupuestoBasadoAPI.Data;
 using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Models;
+using System.Security.Claims;
 
 namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // 🔐 Solo usuarios autenticados
     public class AnalisisAlternativasController : ControllerBase
     {
         private readonly AppDbContext _ctx;
         public AnalisisAlternativasController(AppDbContext ctx) => _ctx = ctx;
 
+        // Obtener el último análisis del usuario logueado
         [HttpGet("ultimo")]
         public async Task<IActionResult> GetUltimo()
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var item = await _ctx.AnalisisAlternativas
                 .Include(a => a.Alternativas)
+                .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.Id)
                 .FirstOrDefaultAsync();
 
@@ -26,24 +32,33 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(item);
         }
 
+        // Obtener análisis por id solo si pertenece al usuario logueado
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var item = await _ctx.AnalisisAlternativas
                 .Include(a => a.Alternativas)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
 
             if (item is null) return NotFound();
             return Ok(item);
         }
 
+        // Crear nuevo análisis y asociarlo al usuario logueado
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AnalisisAlternativasDto dto)
         {
             if (dto?.Alternativas is null || dto.Alternativas.Count == 0)
                 return BadRequest("Se requieren alternativas.");
 
-            var analisis = new AnalisisAlternativas();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var analisis = new AnalisisAlternativas
+            {
+                UserId = userId // 🔗 Se liga al usuario actual
+            };
 
             foreach (var alt in dto.Alternativas)
             {

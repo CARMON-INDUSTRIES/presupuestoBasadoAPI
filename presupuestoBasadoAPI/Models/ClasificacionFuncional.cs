@@ -8,6 +8,8 @@
         public string Subfuncion { get; set; }
         public int AnioOperando { get; set; }
         public string EntregaBienes { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+
 
     }
 }

@@ -11,5 +11,7 @@
         public int TotalObtenido { get; set; }
         public int TotalMaximo { get; set; }
         public int Probabilidad { get; set; }   // 0–100
+        public string UserId { get; set; } = string.Empty;
+
     }
 }

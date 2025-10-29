@@ -10,7 +10,9 @@ namespace presupuestoBasadoAPI.Models
         public int DisenoIntervencionPublicaId { get; set; }
         public DisenoIntervencionPublica DisenoIntervencionPublica { get; set; }
 
-        public ICollection<Accion> Acciones { get; set; } = new List<Accion>();
-        public ICollection<Resultado> Resultados { get; set; } = new List<Resultado>();
+        public virtual ICollection<Accion> Acciones { get; set; } = new List<Accion>();
+        public virtual Resultado? Resultado { get; set; }
+        public string UserId { get; set; } = string.Empty;
+
     }
 }

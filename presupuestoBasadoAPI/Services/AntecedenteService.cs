@@ -17,9 +17,10 @@ namespace presupuestoBasadoAPI.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<AntecedenteDto>> GetAllAsync()
+        public async Task<IEnumerable<AntecedenteDto>> GetAllAsync(string userId)
         {
             return await _context.Antecedentes
+                .Where(a => a.UserId == userId)
                 .Select(a => new AntecedenteDto
                 {
                     Id = a.Id,
@@ -31,9 +32,11 @@ namespace presupuestoBasadoAPI.Services
                 .ToListAsync();
         }
 
-        public async Task<AntecedenteDto> GetByIdAsync(int id)
+        public async Task<AntecedenteDto?> GetByIdAsync(int id, string userId)
         {
-            var a = await _context.Antecedentes.FindAsync(id);
+            var a = await _context.Antecedentes
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
             if (a == null) return null;
 
             return new AntecedenteDto
@@ -46,14 +49,15 @@ namespace presupuestoBasadoAPI.Services
             };
         }
 
-        public async Task<AntecedenteDto> CreateAsync(AntecedenteDto dto)
+        public async Task<AntecedenteDto> CreateAsync(AntecedenteDto dto, string userId)
         {
             var a = new Antecedente
             {
                 DescripcionPrograma = dto.DescripcionPrograma,
                 ContextoHistoricoNormativo = dto.ContextoHistoricoNormativo,
                 ProblematicaOrigen = dto.ProblematicaOrigen,
-                ExperienciasPrevias = dto.ExperienciasPrevias
+                ExperienciasPrevias = dto.ExperienciasPrevias,
+                UserId = userId
             };
 
             _context.Antecedentes.Add(a);
@@ -63,9 +67,11 @@ namespace presupuestoBasadoAPI.Services
             return dto;
         }
 
-        public async Task<bool> UpdateAsync(int id, AntecedenteDto dto)
+        public async Task<bool> UpdateAsync(int id, AntecedenteDto dto, string userId)
         {
-            var a = await _context.Antecedentes.FindAsync(id);
+            var a = await _context.Antecedentes
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
             if (a == null) return false;
 
             a.DescripcionPrograma = dto.DescripcionPrograma;
@@ -77,20 +83,24 @@ namespace presupuestoBasadoAPI.Services
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, string userId)
         {
-            var a = await _context.Antecedentes.FindAsync(id);
+            var a = await _context.Antecedentes
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
             if (a == null) return false;
 
             _context.Antecedentes.Remove(a);
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<AntecedenteDto> GetUltimoAsync()
+
+        public async Task<AntecedenteDto?> GetUltimoAsync(string userId)
         {
             var a = await _context.Antecedentes
-                      .OrderByDescending(x => x.Id)
-                      .FirstOrDefaultAsync();
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
 
             if (a == null) return null;
 
@@ -103,6 +113,5 @@ namespace presupuestoBasadoAPI.Services
                 ExperienciasPrevias = a.ExperienciasPrevias
             };
         }
-
     }
 }

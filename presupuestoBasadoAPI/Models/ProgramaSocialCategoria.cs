@@ -7,6 +7,8 @@
         public string Tipo { get; set; } = string.Empty;   // Directo o Indirecto
 
         // Relación con ProgramaSocial
+        public string UserId { get; set; } = string.Empty;
+
         public int ProgramaSocialId { get; set; }
         public ProgramaSocial ProgramaSocial { get; set; }
     }

@@ -8,6 +8,8 @@
         public string Indicadores { get; set; } = string.Empty;
         public string Medios { get; set; } = string.Empty;
         public string Supuestos { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+
     }
 
 }

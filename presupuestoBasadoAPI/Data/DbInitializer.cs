@@ -6,7 +6,7 @@ namespace presupuestoBasadoAPI.Data
     {
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
-            string[] roles = { "UTED", "Enlace", "Coordinador" };
+            string[] roles = { "Administrador", "Usuario" };
 
             foreach (var role in roles)
             {

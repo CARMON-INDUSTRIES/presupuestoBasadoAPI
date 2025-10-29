@@ -21,7 +21,8 @@ namespace presupuestoBasadoAPI.Services
             {
                 TienePadron = dto.TienePadron,
                 ArchivoAdjunto = dto.ArchivoAdjunto,
-                LigaInternet = dto.LigaInternet
+                LigaInternet = dto.LigaInternet,
+                UserId = dto.UserId // 🔹 asociar usuario
             };
 
             _context.PadronBeneficiarios.Add(entidad);
@@ -30,9 +31,10 @@ namespace presupuestoBasadoAPI.Services
             return dto;
         }
 
-        public async Task<PadronBeneficiariosDto?> ObtenerUltimoAsync()
+        public async Task<PadronBeneficiariosDto?> ObtenerUltimoAsync(string userId)
         {
             var entidad = await _context.PadronBeneficiarios
+                .Where(x => x.UserId == userId) // 🔹 filtrar por usuario
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
 
@@ -42,7 +44,8 @@ namespace presupuestoBasadoAPI.Services
             {
                 TienePadron = entidad.TienePadron,
                 ArchivoAdjunto = entidad.ArchivoAdjunto,
-                LigaInternet = entidad.LigaInternet
+                LigaInternet = entidad.LigaInternet,
+                UserId = entidad.UserId
             };
         }
     }

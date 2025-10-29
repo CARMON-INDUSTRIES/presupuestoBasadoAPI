@@ -6,11 +6,11 @@ namespace presupuestoBasadoAPI.Services
 {
     public interface IIdentificacionDescripcionProblemaService
     {
-        Task<IEnumerable<IdentificacionDescripcionProblemaDto>> GetAllAsync();
-        Task<IdentificacionDescripcionProblemaDto> GetByIdAsync(int id);
-        Task<IdentificacionDescripcionProblemaDto> CreateAsync(IdentificacionDescripcionProblemaDto dto);
-        Task<bool> UpdateAsync(int id, IdentificacionDescripcionProblemaDto dto);
-        Task<bool> DeleteAsync(int id);
-        Task<IdentificacionDescripcionProblemaDto> GetUltimoAsync();
+        Task<IEnumerable<IdentificacionDescripcionProblemaDto>> GetAllAsync(string userId);
+        Task<IdentificacionDescripcionProblemaDto> GetByIdAsync(int id, string userId);
+        Task<IdentificacionDescripcionProblemaDto> CreateAsync(IdentificacionDescripcionProblemaDto dto, string userId);
+        Task<bool> UpdateAsync(int id, IdentificacionDescripcionProblemaDto dto, string userId);
+        Task<bool> DeleteAsync(int id, string userId);
+        Task<IdentificacionDescripcionProblemaDto> GetUltimoAsync(string userId);
     }
 }

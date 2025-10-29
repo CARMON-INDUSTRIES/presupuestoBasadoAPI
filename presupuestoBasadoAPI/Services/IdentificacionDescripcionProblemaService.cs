@@ -17,9 +17,10 @@ namespace presupuestoBasadoAPI.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<IdentificacionDescripcionProblemaDto>> GetAllAsync()
+        public async Task<IEnumerable<IdentificacionDescripcionProblemaDto>> GetAllAsync(string userId)
         {
             return await _context.IdentificacionDescripcionProblemas
+                .Where(p => p.UserId == userId)
                 .Select(p => new IdentificacionDescripcionProblemaDto
                 {
                     Id = p.Id,
@@ -35,9 +36,11 @@ namespace presupuestoBasadoAPI.Services
                 .ToListAsync();
         }
 
-        public async Task<IdentificacionDescripcionProblemaDto> GetByIdAsync(int id)
+        public async Task<IdentificacionDescripcionProblemaDto> GetByIdAsync(int id, string userId)
         {
-            var p = await _context.IdentificacionDescripcionProblemas.FindAsync(id);
+            var p = await _context.IdentificacionDescripcionProblemas
+                                  .Where(x => x.Id == id && x.UserId == userId)
+                                  .FirstOrDefaultAsync();
             if (p == null) return null;
 
             return new IdentificacionDescripcionProblemaDto
@@ -54,7 +57,7 @@ namespace presupuestoBasadoAPI.Services
             };
         }
 
-        public async Task<IdentificacionDescripcionProblemaDto> CreateAsync(IdentificacionDescripcionProblemaDto dto)
+        public async Task<IdentificacionDescripcionProblemaDto> CreateAsync(IdentificacionDescripcionProblemaDto dto, string userId)
         {
             var p = new IdentificacionDescripcionProblema
             {
@@ -65,7 +68,8 @@ namespace presupuestoBasadoAPI.Services
                 CausaEjecutores = dto.CausaEjecutores,
                 CausaIndiferentes = dto.CausaIndiferentes,
                 Efectos = dto.Efectos,
-                Evolucion = dto.Evolucion
+                Evolucion = dto.Evolucion,
+                UserId = userId // 🔹 asociar al usuario loggeado
             };
 
             _context.IdentificacionDescripcionProblemas.Add(p);
@@ -75,17 +79,19 @@ namespace presupuestoBasadoAPI.Services
             return dto;
         }
 
-        public async Task<bool> UpdateAsync(int id, IdentificacionDescripcionProblemaDto dto)
+        public async Task<bool> UpdateAsync(int id, IdentificacionDescripcionProblemaDto dto, string userId)
         {
-            var p = await _context.IdentificacionDescripcionProblemas.FindAsync(id);
+            var p = await _context.IdentificacionDescripcionProblemas
+                                  .Where(x => x.Id == id && x.UserId == userId)
+                                  .FirstOrDefaultAsync();
             if (p == null) return false;
 
             p.ProblemaCentral = dto.ProblemaCentral;
             p.Involucrados = dto.Involucrados;
-            p.CausaBeneficiados = p.CausaBeneficiados;
-            p.CausaOpositores = p.CausaOpositores;
-            p.CausaEjecutores = p.CausaEjecutores;
-            p.CausaIndiferentes = p.CausaIndiferentes;
+            p.CausaBeneficiados = dto.CausaBeneficiados;
+            p.CausaOpositores = dto.CausaOpositores;
+            p.CausaEjecutores = dto.CausaEjecutores;
+            p.CausaIndiferentes = dto.CausaIndiferentes;
             p.Efectos = dto.Efectos;
             p.Evolucion = dto.Evolucion;
 
@@ -93,9 +99,11 @@ namespace presupuestoBasadoAPI.Services
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, string userId)
         {
-            var p = await _context.IdentificacionDescripcionProblemas.FindAsync(id);
+            var p = await _context.IdentificacionDescripcionProblemas
+                                  .Where(x => x.Id == id && x.UserId == userId)
+                                  .FirstOrDefaultAsync();
             if (p == null) return false;
 
             _context.IdentificacionDescripcionProblemas.Remove(p);
@@ -103,12 +111,12 @@ namespace presupuestoBasadoAPI.Services
             return true;
         }
 
-        public async Task<IdentificacionDescripcionProblemaDto> GetUltimoAsync()
+        public async Task<IdentificacionDescripcionProblemaDto> GetUltimoAsync(string userId)
         {
             var p = await _context.IdentificacionDescripcionProblemas
-                .OrderByDescending(x => x.Id)
-                .FirstOrDefaultAsync();
-
+                                  .Where(x => x.UserId == userId)
+                                  .OrderByDescending(x => x.Id)
+                                  .FirstOrDefaultAsync();
             if (p == null) return null;
 
             return new IdentificacionDescripcionProblemaDto

@@ -15,10 +15,11 @@ namespace presupuestoBasadoAPI.Services
             _context = context;
         }
 
-        public async Task<ArbolObjetivosDto?> GetUltimoAsync()
+        public async Task<ArbolObjetivosDto?> GetUltimoAsync(string userId)
         {
             var entity = await _context.ArbolObjetivos
                 .Include(a => a.Componentes)
+                .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.Id)
                 .FirstOrDefaultAsync();
 
@@ -39,12 +40,13 @@ namespace presupuestoBasadoAPI.Services
             };
         }
 
-        public async Task<ArbolObjetivosDto> CrearAsync(ArbolObjetivosDto dto)
+        public async Task<ArbolObjetivosDto> CrearAsync(ArbolObjetivosDto dto, string userId)
         {
             var entity = new ArbolObjetivos
             {
                 Fin = dto.Fin,
                 ObjetivoCentral = dto.ObjetivoCentral,
+                UserId = userId,
                 Componentes = dto.Componentes.Select(c => new ComponenteObjetivo
                 {
                     Nombre = c.Nombre,

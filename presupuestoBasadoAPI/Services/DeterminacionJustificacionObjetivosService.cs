@@ -17,9 +17,10 @@ namespace presupuestoBasadoAPI.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<DeterminacionJustificacionObjetivosDto>> GetAllAsync()
+        public async Task<IEnumerable<DeterminacionJustificacionObjetivosDto>> GetAllAsync(string userId)
         {
             return await _context.DeterminacionJustificacionObjetivo
+                .Where(d => d.UserId == userId)
                 .Select(d => new DeterminacionJustificacionObjetivosDto
                 {
                     Id = d.Id,
@@ -29,9 +30,10 @@ namespace presupuestoBasadoAPI.Services
                 .ToListAsync();
         }
 
-        public async Task<DeterminacionJustificacionObjetivosDto> GetByIdAsync(int id)
+        public async Task<DeterminacionJustificacionObjetivosDto> GetByIdAsync(int id, string userId)
         {
-            var d = await _context.DeterminacionJustificacionObjetivo.FindAsync(id);
+            var d = await _context.DeterminacionJustificacionObjetivo
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
             if (d == null) return null;
 
             return new DeterminacionJustificacionObjetivosDto
@@ -42,12 +44,13 @@ namespace presupuestoBasadoAPI.Services
             };
         }
 
-        public async Task<DeterminacionJustificacionObjetivosDto> CreateAsync(DeterminacionJustificacionObjetivosDto dto)
+        public async Task<DeterminacionJustificacionObjetivosDto> CreateAsync(DeterminacionJustificacionObjetivosDto dto, string userId)
         {
             var d = new DeterminacionJustificacionObjetivos
             {
                 ObjetivosEspecificos = dto.ObjetivosEspecificos,
-                RelacionOtrosProgramas = dto.RelacionOtrosProgramas
+                RelacionOtrosProgramas = dto.RelacionOtrosProgramas,
+                UserId = userId
             };
 
             _context.DeterminacionJustificacionObjetivo.Add(d);
@@ -57,9 +60,10 @@ namespace presupuestoBasadoAPI.Services
             return dto;
         }
 
-        public async Task<bool> UpdateAsync(int id, DeterminacionJustificacionObjetivosDto dto)
+        public async Task<bool> UpdateAsync(int id, DeterminacionJustificacionObjetivosDto dto, string userId)
         {
-            var d = await _context.DeterminacionJustificacionObjetivo.FindAsync(id);
+            var d = await _context.DeterminacionJustificacionObjetivo
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
             if (d == null) return false;
 
             d.ObjetivosEspecificos = dto.ObjetivosEspecificos;
@@ -69,9 +73,10 @@ namespace presupuestoBasadoAPI.Services
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, string userId)
         {
-            var d = await _context.DeterminacionJustificacionObjetivo.FindAsync(id);
+            var d = await _context.DeterminacionJustificacionObjetivo
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
             if (d == null) return false;
 
             _context.DeterminacionJustificacionObjetivo.Remove(d);
@@ -79,9 +84,10 @@ namespace presupuestoBasadoAPI.Services
             return true;
         }
 
-        public async Task<DeterminacionJustificacionObjetivosDto> GetUltimoAsync()
+        public async Task<DeterminacionJustificacionObjetivosDto> GetUltimoAsync(string userId)
         {
             var d = await _context.DeterminacionJustificacionObjetivo
+                .Where(x => x.UserId == userId)
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
 

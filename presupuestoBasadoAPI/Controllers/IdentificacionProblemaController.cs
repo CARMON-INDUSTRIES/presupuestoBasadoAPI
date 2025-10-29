@@ -1,60 +1,56 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Interfaces;
+using presupuestoBasadoAPI.Models;
 
 namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // 🔹 Requiere token válido
     public class IdentificacionProblemaController : ControllerBase
     {
         private readonly IIdentificacionProblemaService _service;
-        private readonly AppDbContext _context;
 
-        public IdentificacionProblemaController(IIdentificacionProblemaService service, AppDbContext context)
+        public IdentificacionProblemaController(IIdentificacionProblemaService service)
         {
             _service = service;
-            _context = context;
         }
+
+        private string GetUserId() => User.Identity?.Name ?? "";
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] IdentificacionProblemaDto dto)
         {
-            var resultado = await _service.CrearAsync(dto);
+            var resultado = await _service.CrearAsync(dto, GetUserId());
             return Ok(resultado);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<IdentificacionProblemaDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<IdentificacionProblema>>> GetAll()
         {
-            var lista = await _service.ObtenerTodosAsync();
+            var lista = await _service.ObtenerTodosAsync(GetUserId());
             return Ok(lista);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IdentificacionProblemaDto>> GetById(int id)
+        public async Task<ActionResult<IdentificacionProblema>> GetById(int id)
         {
-            var resultado = await _service.ObtenerPorIdAsync(id);
+            var resultado = await _service.ObtenerPorIdAsync(id, GetUserId());
             if (resultado == null)
                 return NotFound();
             return Ok(resultado);
         }
 
         [HttpGet("ultimo")]
-        public async Task<ActionResult<IdentificacionProblemaDto>> ObtenerUltimo()
+        public async Task<ActionResult<IdentificacionProblema>> ObtenerUltimo()
         {
-            var ultimo = await _context.IdentificacionProblemas
-                .OrderByDescending(p => p.Id)
-                .FirstOrDefaultAsync();
-
+            var ultimo = await _service.ObtenerUltimoAsync(GetUserId());
             if (ultimo == null)
                 return NotFound("No se encontró ningún registro.");
-
             return Ok(ultimo);
         }
-
     }
-
 }

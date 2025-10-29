@@ -22,5 +22,7 @@ namespace presupuestoBasadoAPI.Models
 
         // Conveniencia
         public int Total { get; set; }
+        public string UserId { get; set; } = string.Empty;
+
     }
 }

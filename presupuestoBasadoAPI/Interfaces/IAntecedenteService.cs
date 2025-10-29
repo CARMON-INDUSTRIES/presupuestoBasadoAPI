@@ -6,12 +6,11 @@ namespace presupuestoBasadoAPI.Services
 {
     public interface IAntecedenteService
     {
-        Task<IEnumerable<AntecedenteDto>> GetAllAsync();
-        Task<AntecedenteDto> GetByIdAsync(int id);
-        Task<AntecedenteDto> CreateAsync(AntecedenteDto dto);
-        Task<bool> UpdateAsync(int id, AntecedenteDto dto);
-        Task<bool> DeleteAsync(int id);
-        Task<AntecedenteDto> GetUltimoAsync();
-
+        Task<IEnumerable<AntecedenteDto>> GetAllAsync(string userId);
+        Task<AntecedenteDto?> GetByIdAsync(int id, string userId);
+        Task<AntecedenteDto> CreateAsync(AntecedenteDto dto, string userId);
+        Task<bool> UpdateAsync(int id, AntecedenteDto dto, string userId);
+        Task<bool> DeleteAsync(int id, string userId);
+        Task<AntecedenteDto?> GetUltimoAsync(string userId);
     }
 }

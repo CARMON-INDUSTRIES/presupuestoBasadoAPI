@@ -7,6 +7,8 @@
         public string ProblemaCentral { get; set; }             // Frase concreta
         public string EvidenciaProblema { get; set; }           // Datos, fuentes, etc.
         public DateTime FechaCreacion { get; set; } = DateTime.Now;
+        public string UserId { get; set; } = string.Empty;
+
     }
 
 }

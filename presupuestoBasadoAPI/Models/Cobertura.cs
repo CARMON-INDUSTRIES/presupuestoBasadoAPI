@@ -22,5 +22,7 @@
         // 4.5 Procesos
         public string ProcesoIdentificacionPoblacionPotencial { get; set; } = string.Empty;
         public string ProcesoIdentificacionPoblacionObjetivo { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+
     }
 }

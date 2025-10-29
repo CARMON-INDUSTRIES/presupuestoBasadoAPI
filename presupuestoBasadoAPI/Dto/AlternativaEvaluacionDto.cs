@@ -2,7 +2,7 @@
 {
     public class AlternativaEvaluacionDto
     {
-        public string Nombre { get; set; } = string.Empty;
+        public string? Nombre { get; set; } = string.Empty;
         public int Facultad { get; set; }
         public int Presupuesto { get; set; }
         public int CortoPlazo { get; set; }

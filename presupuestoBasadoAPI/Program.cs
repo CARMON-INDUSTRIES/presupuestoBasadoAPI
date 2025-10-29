@@ -6,36 +6,40 @@ using System.Text;
 using presupuestoBasadoAPI.Models;
 using presupuestoBasadoAPI.Services;
 using presupuestoBasadoAPI.Interfaces;
-using presupuestoBasadoAPI.Data; // Para usar DbInitializer
+using presupuestoBasadoAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-//  Cadena de conexión
+// 🔹 Cadena de conexión
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+// 🔹 Configuración de CORS (local + producción)
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.WithOrigins("http://localhost:9000", "http://localhost:9001")
-                                .AllowAnyMethod()
-                                .AllowAnyHeader()
-                                .AllowCredentials();
-                      });
+    options.AddPolicy(name: MyAllowSpecificOrigins, policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:9000",
+                "http://localhost:9001",
+                "https://presupuesto-basado-frontend.vercel.app"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
 
 //  Registrar DbContext con SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Agregar Identity con soporte de roles (sin cookies)
+//  Identity sin cookies
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// Inyección de servicios
+//  Inyección de servicios personalizados
 builder.Services.AddScoped<IProgramaService, ProgramaService>();
 builder.Services.AddScoped<IIdentificacionProblemaService, IdentificacionProblemaService>();
 builder.Services.AddScoped<IJustificacionProgramaService, JustificacionProgramaService>();
@@ -50,7 +54,11 @@ builder.Services.AddScoped<IProgramaSocialService, ProgramaSocialService>();
 builder.Services.AddScoped<IPadronBeneficiariosService, PadronBeneficiariosService>();
 builder.Services.AddScoped<IReglasOperacionService, ReglasOperacionService>();
 builder.Services.AddScoped<IArbolObjetivosService, ArbolObjetivosService>();
+builder.Services.AddScoped<IUsuarioActualService, UsuarioActualService>();
+builder.Services.AddSingleton<CloudinaryService>();
+builder.Services.AddHttpContextAccessor();
 
+//  Configuración de JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -58,7 +66,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.WriteIndented = true;
     });
 
-var jwtKey = builder.Configuration["Jwt:Key"]; //Jwt:Key en appsettings.json
+//  Configuración de JWT
+var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrEmpty(jwtKey))
 {
     throw new Exception("No se encontró la clave Jwt:Key en appsettings.json");
@@ -95,31 +104,57 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Agregar controladores y Swagger
-builder.Services.AddControllers();
+//  Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Middleware
+//  Middleware
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
-app.UseCors(MyAllowSpecificOrigins);
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// primero Autenticación, luego Autorización
+
+app.UseCors(MyAllowSpecificOrigins);
+
+
+app.Use(async (context, next) =>
+{
+    var origin = context.Request.Headers["Origin"].ToString();
+
+    if (!string.IsNullOrEmpty(origin) && (
+        origin == "https://presupuesto-basado-frontend.vercel.app" ||
+        origin == "http://localhost:9000" ||
+        origin == "http://localhost:9001"))
+    {
+        context.Response.Headers.TryAdd("Access-Control-Allow-Origin", origin);
+        context.Response.Headers.TryAdd("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        context.Response.Headers.TryAdd("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        context.Response.Headers.TryAdd("Access-Control-Allow-Credentials", "true");
+    }
+
+    if (context.Request.Method == "OPTIONS")
+    {
+        context.Response.StatusCode = 204;
+        return;
+    }
+
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Inicialización de roles al iniciar la app
+//  Inicialización de roles
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();

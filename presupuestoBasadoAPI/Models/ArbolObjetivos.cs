@@ -9,6 +9,7 @@
 
         // Objetivo central
         public string ObjetivoCentral { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         // Colección de componentes
         public ICollection<ComponenteObjetivo> Componentes { get; set; } = new List<ComponenteObjetivo>();
@@ -22,5 +23,7 @@
         // Cada componente tiene medios (acciones) y fines intermedios (resultados)
         public ICollection<string> Medios { get; set; } = new List<string>();
         public ICollection<string> Resultados { get; set; } = new List<string>();
+        public string UserId { get; set; } = string.Empty;
+
     }
 }

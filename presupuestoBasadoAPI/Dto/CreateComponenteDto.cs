@@ -1,4 +1,4 @@
-﻿namespace presupuestoBasadoAPI.DTOs
+﻿namespace presupuestoBasadoAPI.Dto
 {
     public class CreateComponenteDto
     {

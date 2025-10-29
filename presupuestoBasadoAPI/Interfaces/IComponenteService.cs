@@ -1,4 +1,5 @@
-﻿using presupuestoBasadoAPI.DTOs;
+﻿using presupuestoBasadoAPI.Dto;
+
 
 namespace presupuestoBasadoAPI.Interfaces
 {

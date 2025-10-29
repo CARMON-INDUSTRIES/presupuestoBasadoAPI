@@ -6,6 +6,8 @@
 
         // ¿Es programa social? (true/false)
         public bool EsProgramaSocial { get; set; }
+        public string UserId { get; set; } = string.Empty;
+
 
         // Lista de categorías seleccionadas
         public ICollection<ProgramaSocialCategoria> Categorias { get; set; } = new List<ProgramaSocialCategoria>();

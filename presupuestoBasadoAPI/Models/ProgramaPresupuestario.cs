@@ -8,5 +8,7 @@
         public string ObjetivoGeneral { get; set; }
         public string UnidadResponsable { get; set; }
         public string UnidadesIntegrantes { get; set; }
+        public string UserId { get; set; } = string.Empty;
+
     }
 }

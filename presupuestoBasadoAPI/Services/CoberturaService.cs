@@ -17,9 +17,10 @@ namespace presupuestoBasadoAPI.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<CoberturaDto>> GetAllAsync()
+        public async Task<IEnumerable<CoberturaDto>> GetAllAsync(string userId)
         {
             return await _context.Coberturas
+                .Where(c => c.UserId == userId)
                 .Select(c => new CoberturaDto
                 {
                     Id = c.Id,
@@ -36,9 +37,11 @@ namespace presupuestoBasadoAPI.Services
                 .ToListAsync();
         }
 
-        public async Task<CoberturaDto> GetByIdAsync(int id)
+        public async Task<CoberturaDto?> GetByIdAsync(int id, string userId)
         {
-            var c = await _context.Coberturas.FindAsync(id);
+            var c = await _context.Coberturas
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
             if (c == null) return null;
 
             return new CoberturaDto
@@ -56,10 +59,11 @@ namespace presupuestoBasadoAPI.Services
             };
         }
 
-        public async Task<CoberturaDto> CreateAsync(CoberturaDto dto)
+        public async Task<CoberturaDto> CreateAsync(CoberturaDto dto, string userId)
         {
             var c = new Cobertura
             {
+                UserId = userId,
                 IdentificacionCaracterizacionPoblacionPotencial = dto.IdentificacionCaracterizacionPoblacionPotencial,
                 IdentificacionCaracterizacionPoblacionObjetivo = dto.IdentificacionCaracterizacionPoblacionObjetivo,
                 UnidadMedida = dto.UnidadMedida,
@@ -78,9 +82,11 @@ namespace presupuestoBasadoAPI.Services
             return dto;
         }
 
-        public async Task<bool> UpdateAsync(int id, CoberturaDto dto)
+        public async Task<bool> UpdateAsync(int id, CoberturaDto dto, string userId)
         {
-            var c = await _context.Coberturas.FindAsync(id);
+            var c = await _context.Coberturas
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
             if (c == null) return false;
 
             c.IdentificacionCaracterizacionPoblacionPotencial = dto.IdentificacionCaracterizacionPoblacionPotencial;
@@ -97,9 +103,11 @@ namespace presupuestoBasadoAPI.Services
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id, string userId)
         {
-            var c = await _context.Coberturas.FindAsync(id);
+            var c = await _context.Coberturas
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
             if (c == null) return false;
 
             _context.Coberturas.Remove(c);
@@ -107,9 +115,10 @@ namespace presupuestoBasadoAPI.Services
             return true;
         }
 
-        public async Task<CoberturaDto> GetUltimoAsync()
+        public async Task<CoberturaDto?> GetUltimoAsync(string userId)
         {
             var c = await _context.Coberturas
+                .Where(x => x.UserId == userId)
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
 

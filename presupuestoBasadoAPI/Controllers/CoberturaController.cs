@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Services;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CoberturaController : ControllerBase
     {
         private readonly ICoberturaService _service;
@@ -17,17 +20,22 @@ namespace presupuestoBasadoAPI.Controllers
             _service = service;
         }
 
+        private string GetUserId() =>
+            User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoberturaDto>>> Get()
         {
-            var list = await _service.GetAllAsync();
+            var userId = GetUserId();
+            var list = await _service.GetAllAsync(userId);
             return Ok(list);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<CoberturaDto>> Get(int id)
         {
-            var item = await _service.GetByIdAsync(id);
+            var userId = GetUserId();
+            var item = await _service.GetByIdAsync(id, userId);
             if (item == null)
                 return NotFound(new { message = $"Cobertura con ID {id} no encontrada" });
 
@@ -37,7 +45,8 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpGet("ultimo")]
         public async Task<ActionResult<CoberturaDto>> GetUltimo()
         {
-            var ultimo = await _service.GetUltimoAsync();
+            var userId = GetUserId();
+            var ultimo = await _service.GetUltimoAsync(userId);
             if (ultimo == null)
                 return NotFound(new { message = "No hay registros en Cobertura" });
 
@@ -50,7 +59,8 @@ namespace presupuestoBasadoAPI.Controllers
             if (dto == null)
                 return BadRequest(new { message = "El objeto dto es requerido" });
 
-            var created = await _service.CreateAsync(dto);
+            var userId = GetUserId();
+            var created = await _service.CreateAsync(dto, userId);
 
             return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
@@ -61,7 +71,8 @@ namespace presupuestoBasadoAPI.Controllers
             if (dto == null)
                 return BadRequest(new { message = "El objeto dto es requerido" });
 
-            var updated = await _service.UpdateAsync(id, dto);
+            var userId = GetUserId();
+            var updated = await _service.UpdateAsync(id, dto, userId);
             if (!updated)
                 return NotFound(new { message = $"Cobertura con ID {id} no encontrada" });
 
@@ -71,7 +82,8 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
+            var userId = GetUserId();
+            var deleted = await _service.DeleteAsync(id, userId);
             if (!deleted)
                 return NotFound(new { message = $"Cobertura con ID {id} no encontrada" });
 

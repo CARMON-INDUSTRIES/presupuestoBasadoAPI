@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Services;
 using System.Collections.Generic;
@@ -8,26 +9,31 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize] // 🔒 proteger con JWT
     public class AntecedenteController : ControllerBase
     {
         private readonly IAntecedenteService _service;
+        private readonly IUsuarioActualService _usuarioActualService;
 
-        public AntecedenteController(IAntecedenteService service)
+        public AntecedenteController(IAntecedenteService service, IUsuarioActualService usuarioActualService)
         {
             _service = service;
+            _usuarioActualService = usuarioActualService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AntecedenteDto>>> Get()
         {
-            var list = await _service.GetAllAsync();
+            var userId = await _usuarioActualService.ObtenerUserIdAsync();
+            var list = await _service.GetAllAsync(userId!);
             return Ok(list);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AntecedenteDto>> Get(int id)
         {
-            var item = await _service.GetByIdAsync(id);
+            var userId = await _usuarioActualService.ObtenerUserIdAsync();
+            var item = await _service.GetByIdAsync(id, userId!);
             if (item == null) return NotFound();
             return Ok(item);
         }
@@ -35,14 +41,16 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<AntecedenteDto>> Post([FromBody] AntecedenteDto dto)
         {
-            var created = await _service.CreateAsync(dto);
+            var userId = await _usuarioActualService.ObtenerUserIdAsync();
+            var created = await _service.CreateAsync(dto, userId!);
             return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] AntecedenteDto dto)
         {
-            var updated = await _service.UpdateAsync(id, dto);
+            var userId = await _usuarioActualService.ObtenerUserIdAsync();
+            var updated = await _service.UpdateAsync(id, dto, userId!);
             if (!updated) return NotFound();
             return NoContent();
         }
@@ -50,7 +58,8 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
+            var userId = await _usuarioActualService.ObtenerUserIdAsync();
+            var deleted = await _service.DeleteAsync(id, userId!);
             if (!deleted) return NotFound();
             return NoContent();
         }
@@ -58,11 +67,10 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpGet("ultimo")]
         public async Task<ActionResult<AntecedenteDto>> GetUltimo()
         {
-            var ultimo = await _service.GetUltimoAsync();
+            var userId = await _usuarioActualService.ObtenerUserIdAsync();
+            var ultimo = await _service.GetUltimoAsync(userId!);
             if (ultimo == null) return NotFound();
             return Ok(ultimo);
         }
-
-
     }
 }
