@@ -21,6 +21,6 @@
         public string LineaBaseUnidad { get; set; } = string.Empty;
         public string LineaBaseAnio { get; set; } = string.Empty;
         public string LineaBasePeriodo { get; set; } = string.Empty;
-        public string Crema { get; set; } = string.Empty;   
+        public Dictionary<string, string> Crema { get; set; } = new();
     }
 }

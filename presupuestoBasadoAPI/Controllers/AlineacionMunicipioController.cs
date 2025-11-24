@@ -9,16 +9,16 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔐 Solo usuarios autenticados
+    [Authorize] 
     public class AlineacionMunicipioController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager; // <- Cambiado
+        private readonly UserManager<ApplicationUser> _userManager; 
         private readonly IUsuarioActualService _usuarioActualService;
 
         public AlineacionMunicipioController(
             AppDbContext context,
-            UserManager<ApplicationUser> userManager, // <- Cambiado
+            UserManager<ApplicationUser> userManager, 
             IUsuarioActualService usuarioActualService)
         {
             _context = context;
@@ -26,7 +26,6 @@ namespace presupuestoBasadoAPI.Controllers
             _usuarioActualService = usuarioActualService;
         }
 
-        // ✅ Obtener todos los registros SOLO del usuario actual
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AlineacionMunicipio>>> GetAll()
         {
@@ -38,21 +37,19 @@ namespace presupuestoBasadoAPI.Controllers
                                  .ToListAsync();
         }
 
-        // ✅ Crear registro y asociarlo automáticamente al usuario actual
         [HttpPost]
         public async Task<ActionResult> Crear(AlineacionMunicipio modelo)
         {
             var userId = await _usuarioActualService.ObtenerUserIdAsync();
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-            modelo.UserId = userId; // 🔗 se liga al usuario logueado
+            modelo.UserId = userId; 
 
             _context.AlineacionesMunicipio.Add(modelo);
             await _context.SaveChangesAsync();
             return Ok(modelo);
         }
 
-        // ✅ Obtener el último registro del usuario actual
         [HttpGet("ultimo")]
         public async Task<ActionResult<AlineacionMunicipio>> GetUltimo()
         {

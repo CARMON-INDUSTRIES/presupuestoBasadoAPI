@@ -57,6 +57,18 @@ namespace presupuestoBasadoAPI.Controllers
             var userId = GetUserId();
             var emblemaPath = GetEmblemaPath(userId);
 
+            var usuario = await _context.Users
+                .Where(u => u.Id == userId)
+                .Select(u => new {
+                u.NombreCompleto,
+                u.Cargo,
+                u.Coordinador,
+                u.UnidadesPresupuestales,
+                u.ProgramaPresupuestario,
+                u.NombreMatriz
+        })
+            .FirstOrDefaultAsync();
+
 
             var ficha = await _context.Fichas
                 .Include(f => f.Indicadores)
@@ -111,19 +123,20 @@ namespace presupuestoBasadoAPI.Controllers
             document.Add(SeccionTitulo("I. DATOS DE IDENTIFICACIÓN DEL PROGRAMA", colorRojo));
 
             var tProg = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
-            tProg.AddCell(Celda("Unidad responsable:", true, colorGris));
-            tProg.AddCell(Celda(ficha.UnidadResponsable));
+            tProg.AddCell(Celda("Nombre completo:", true, colorGris));
+            tProg.AddCell(Celda(usuario.NombreCompleto));
+            tProg.AddCell(Celda("Cargo:", true, colorGris));
+            tProg.AddCell(Celda(usuario.Cargo));
+            tProg.AddCell(Celda("Coordinador:", true, colorGris));
+            tProg.AddCell(Celda(usuario.Coordinador));
             tProg.AddCell(Celda("Unidad presupuestal:", true, colorGris));
-            tProg.AddCell(Celda(ficha.UnidadPresupuestal));
+            tProg.AddCell(Celda(usuario.UnidadesPresupuestales));
             tProg.AddCell(Celda("Programa presupuestario:", true, colorGris));
-            tProg.AddCell(Celda(ficha.ProgramaPresupuestario));
-            tProg.AddCell(Celda("Clave del indicador:", true, colorGris));
-            tProg.AddCell(Celda(ficha.ClaveIndicador));
-            tProg.AddCell(Celda("Tipo de indicador:", true, colorGris));
-            tProg.AddCell(Celda(ficha.TipoIndicador));
-            tProg.AddCell(Celda("Responsable MIR:", true, colorGris));
-            tProg.AddCell(Celda(ficha.ResponsableMIR));
+            tProg.AddCell(Celda(usuario.ProgramaPresupuestario));
+            tProg.AddCell(Celda("Nombre de la matriz:", true, colorGris));
+            tProg.AddCell(Celda(usuario.NombreMatriz));
             document.Add(tProg);
+
 
             // === II. DATOS DEL INDICADOR SELECCIONADO ===
             var indicador = indicadores.First();
@@ -215,36 +228,46 @@ namespace presupuestoBasadoAPI.Controllers
             }
             document.Add(tMetas);
 
-            // === LÍNEA DE ACCIÓN (solo línea de acción) ===
-            document.Add(SeccionTitulo("IV. LÍNEA DE ACCIÓN", colorRojo));
+            document.Add(SeccionTitulo("IV. CREMA", colorRojo));
 
-            var municipales = await _context.AlineacionesMunicipio
+            var cremaTexto = indicador.Crema != null
+                ? string.Join(", ", indicador.Crema.Select(c => $"{c.Key}: {c.Value}"))
+                : "N/A";
+
+            document.Add(new Paragraph($"Crema: {cremaTexto}"));
+
+            // === IV. LÍNEA DE ACCIÓN (solo la última capturada) ===
+            document.Add(SeccionTitulo("V. LÍNEA DE ACCIÓN", colorRojo));
+
+            var ultimaMunicipal = await _context.AlineacionesMunicipio
                 .Where(a => a.UserId == userId)
-                .ToListAsync();
+                .OrderByDescending(a => a.Id)
+                .FirstOrDefaultAsync();
 
-            var estatales = await _context.AlineacionesEstado
+            var ultimaEstatal = await _context.AlineacionesEstado
                 .Where(a => a.UserId == userId)
-                .ToListAsync();
+                .OrderByDescending(a => a.Id)
+                .FirstOrDefaultAsync();
 
-            var todasLineas = municipales.Cast<dynamic>().Concat(estatales.Cast<dynamic>()).ToList();
+            // Si existe estatal se usa esa; si no, la municipal
+            var lineaSeleccionada = ultimaEstatal?.LineaAccion ?? ultimaMunicipal?.LineaAccion;
 
-            if (todasLineas.Any())
+
+            if (!string.IsNullOrWhiteSpace(lineaSeleccionada))
             {
                 var tLa = new Table(UnitValue.CreatePercentArray(new float[] { 1 })).UseAllAvailableWidth();
-                foreach (var la in todasLineas)
-                {
-                    tLa.AddCell(new Cell()
-                        .Add(new Paragraph(la.LineaAccion ?? "").SetFontSize(9))
-                        .SetBorder(new iText.Layout.Borders.SolidBorder(ColorConstants.BLACK, 0.5f))
-                        .SetPadding(4));
-                }
+                tLa.AddCell(new Cell()
+                    .Add(new Paragraph(lineaSeleccionada).SetFontSize(9))
+                    .SetBorder(new iText.Layout.Borders.SolidBorder(ColorConstants.BLACK, 0.5f))
+                    .SetPadding(4));
                 document.Add(tLa);
             }
             else
             {
-                document.Add(new Paragraph("No hay líneas de acción registradas para este usuario.")
+                document.Add(new Paragraph("No hay línea de acción registrada para este usuario.")
                     .SetFontSize(9));
             }
+
 
             document.Close();
             return File(ms.ToArray(), "application/pdf", $"FichaIndicador_{ficha.Id}_{indicador.Id}.pdf");

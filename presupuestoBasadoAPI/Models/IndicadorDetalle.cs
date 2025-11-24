@@ -1,5 +1,6 @@
 ﻿using presupuestoBasadoAPI.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class IndicadorDetalle
 {
@@ -31,5 +32,7 @@ public class IndicadorDetalle
     public string LineaBaseUnidad { get; set; } = string.Empty;
     public string LineaBaseAnio { get; set; } = string.Empty;
     public string LineaBasePeriodo { get; set; } = string.Empty;
-    public string Crema { get; set; } = string.Empty;
+
+    [NotMapped]
+    public Dictionary<string, string> Crema { get; set; } = new();
 }

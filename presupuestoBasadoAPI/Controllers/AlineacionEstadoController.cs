@@ -8,7 +8,7 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔐 Solo usuarios autenticados
+    [Authorize] 
     public class AlineacionEstadoController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -18,7 +18,6 @@ namespace presupuestoBasadoAPI.Controllers
             _context = context;
         }
 
-        // Obtener todos los registros del usuario logueado
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AlineacionEstado>>> GetAll()
         {
@@ -28,7 +27,6 @@ namespace presupuestoBasadoAPI.Controllers
                                  .ToListAsync();
         }
 
-        // Crear registro vinculado al usuario logueado
         [HttpPost]
         public async Task<ActionResult> Crear(AlineacionEstado modelo)
         {
@@ -40,7 +38,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(modelo);
         }
 
-        // Obtener el último registro del usuario logueado
         [HttpGet("ultimo")]
         public async Task<ActionResult<AlineacionEstado>> GetUltimo()
         {
