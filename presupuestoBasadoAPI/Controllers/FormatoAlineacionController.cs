@@ -211,7 +211,7 @@ namespace presupuestoBasadoAPI.Controllers
             // === FIRMAS ===
             var firmas = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             firmas.AddCell(CeldaFirma($"\n\n\n\n(Nombre y firma)\n{usuario.NombreCompleto ?? usuario.UserName ?? "Responsable de la MIR"}", font));
-            firmas.AddCell(CeldaFirma("\n\n\n\n(Nombre y firma)\nM.R.H. Daniela López Hernández", font));
+            firmas.AddCell(CeldaFirma("\n\n\n\n(Nombre y firma)\nDirector/a", font));
             doc.Add(firmas);
 
             doc.Close();

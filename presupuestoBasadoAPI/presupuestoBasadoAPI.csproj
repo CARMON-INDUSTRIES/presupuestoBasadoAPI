@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Cloudinary" Version="0.0.5" />
     <PackageReference Include="CloudinaryDotNet" Version="1.27.7" />
+    <PackageReference Include="FluentFTP" Version="53.0.2" />
     <PackageReference Include="itext.bouncy-castle-adapter" Version="8.0.5" />
     <PackageReference Include="itext7" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.19" />
@@ -23,6 +24,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.Net.FtpClient" Version="1.0.5824.34026" />
   </ItemGroup>
 
   <ItemGroup>

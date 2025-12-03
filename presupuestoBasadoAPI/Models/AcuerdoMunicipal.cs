@@ -8,5 +8,9 @@
         public string UserId { get; set; } = string.Empty;
 
         public virtual ICollection<ObjetivoMunicipal> Objetivos { get; set; } = new List<ObjetivoMunicipal>();
+
+        public int EntidadId { get; set; }
+
+
     }
 }
