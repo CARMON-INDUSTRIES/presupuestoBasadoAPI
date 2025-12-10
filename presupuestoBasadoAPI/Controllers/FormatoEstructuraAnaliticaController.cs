@@ -32,11 +32,11 @@ namespace presupuestoBasadoAPI.Controllers
             _imagesPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Images");
         }
 
-        // 🔹 Obtener UserId del token
+        // Obtener UserId del token
         private string GetUserId() =>
             User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
 
-        // 🔹 Obtener ruta del emblema según la entidad del usuario
+        // Obtener ruta del emblema según la entidad del usuario
         private string GetEmblemaPath(string userId)
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);

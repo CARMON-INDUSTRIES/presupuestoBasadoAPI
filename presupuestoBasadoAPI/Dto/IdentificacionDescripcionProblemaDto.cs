@@ -11,5 +11,8 @@
         public string CausaIndiferentes { get; set; } = string.Empty;
         public string Efectos { get; set; } = string.Empty;
         public string Evolucion { get; set; } = string.Empty;
+
+        public string UserId { get; set; } = string.Empty; 
+
     }
 }

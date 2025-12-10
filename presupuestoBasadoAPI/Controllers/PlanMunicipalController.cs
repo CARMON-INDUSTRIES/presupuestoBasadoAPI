@@ -8,7 +8,7 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // Asegura que todas las rutas requieran autenticación
+    [Authorize] 
     public class PlanMunicipalController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -18,7 +18,6 @@ namespace presupuestoBasadoAPI.Controllers
             _context = context;
         }
 
-        // Método helper para obtener el EntidadId del usuario actual
         private async Task<int?> GetUsuarioEntidadId()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -32,7 +31,6 @@ namespace presupuestoBasadoAPI.Controllers
             return usuario?.EntidadId;
         }
 
-        // GET: api/PlanMunicipal/acuerdos
         [HttpGet("acuerdos")]
         public async Task<ActionResult<IEnumerable<AcuerdoMunicipal>>> GetAcuerdos()
         {
@@ -48,7 +46,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(acuerdos);
         }
 
-        // GET: api/PlanMunicipal/acuerdo/1/objetivos
         [HttpGet("acuerdo/{acuerdoId}/objetivos")]
         public async Task<ActionResult<IEnumerable<ObjetivoMunicipal>>> GetObjetivos(int acuerdoId)
         {
@@ -62,7 +59,7 @@ namespace presupuestoBasadoAPI.Controllers
                 .AnyAsync(a => a.Id == acuerdoId && a.EntidadId == entidadId.Value);
 
             if (!acuerdoPertenece)
-                return Forbid(); // 403 Forbidden
+                return Forbid(); 
 
             var objetivos = await _context.ObjetivoMunicipal
                 .Where(o => o.AcuerdoMunicipalId == acuerdoId)
@@ -71,7 +68,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(objetivos);
         }
 
-        // GET: api/PlanMunicipal/objetivo/1/estrategias
         [HttpGet("objetivo/{objetivoId}/estrategias")]
         public async Task<ActionResult<IEnumerable<EstrategiaMunicipal>>> GetEstrategias(int objetivoId)
         {
@@ -80,7 +76,6 @@ namespace presupuestoBasadoAPI.Controllers
             if (entidadId == null)
                 return Unauthorized(new { message = "Usuario no tiene entidad asignada" });
 
-            // Verificar que el objetivo pertenece a un acuerdo de la entidad del usuario
             var objetivoPertenece = await _context.ObjetivoMunicipal
                 .Include(o => o.AcuerdoMunicipal)
                 .AnyAsync(o => o.Id == objetivoId && o.AcuerdoMunicipal.EntidadId == entidadId.Value);
@@ -95,7 +90,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(estrategias);
         }
 
-        // GET: api/PlanMunicipal/estrategia/1/lineas
         [HttpGet("estrategia/{estrategiaId}/lineas")]
         public async Task<ActionResult<IEnumerable<LineaDeAccionMunicipal>>> GetLineas(int estrategiaId)
         {
@@ -104,7 +98,6 @@ namespace presupuestoBasadoAPI.Controllers
             if (entidadId == null)
                 return Unauthorized(new { message = "Usuario no tiene entidad asignada" });
 
-            // Verificar que la estrategia pertenece a la entidad del usuario
             var estrategiaPertenece = await _context.EstrategiaMunicipal
                 .Include(e => e.ObjetivoMunicipal)
                     .ThenInclude(o => o.AcuerdoMunicipal)
@@ -121,7 +114,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(lineas);
         }
 
-        // GET: api/PlanMunicipal/primer-acuerdo
         [HttpGet("primer-acuerdo")]
         public async Task<ActionResult> GetPrimerAcuerdoCompleto()
         {

@@ -10,7 +10,7 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔒 protege con JWT
+    [Authorize] 
     public class DeterminacionJustificacionObjetivosController : ControllerBase
     {
         private readonly IDeterminacionJustificacionObjetivosService _service;
@@ -67,6 +67,50 @@ namespace presupuestoBasadoAPI.Controllers
             var deleted = await _service.DeleteAsync(id, GetUserId());
             if (!deleted) return NotFound();
             return NoContent();
+        }
+
+        [HttpGet("borrador")]
+        public async Task<ActionResult<DeterminacionJustificacionObjetivosDto>> GetBorrador()
+        {
+            var userId = GetUserId();
+            var ultimo = await _service.GetUltimoAsync(userId);
+
+            if (ultimo == null)
+            {
+                var nuevo = new DeterminacionJustificacionObjetivosDto
+                {
+                    ObjetivosEspecificos = "",
+                    RelacionOtrosProgramas = ""
+                };
+
+                var creado = await _service.CreateAsync(nuevo, userId);
+                return Ok(creado);
+            }
+
+            return Ok(ultimo);
+        }
+
+        // PUT /autosave  -----------------------------------------
+        [HttpPut("autosave")]
+        public async Task<ActionResult<DeterminacionJustificacionObjetivosDto>> AutoSave(
+            [FromBody] DeterminacionJustificacionObjetivosDto dto)
+        {
+            var userId = GetUserId();
+            var existente = await _service.GetUltimoAsync(userId);
+
+            if (existente == null)
+            {
+                var creado = await _service.CreateAsync(dto, userId);
+                return Ok(creado);
+            }
+
+            dto.Id = existente.Id;
+
+            await _service.UpdateAsync(existente.Id, dto, userId);
+
+            var actualizado = await _service.GetByIdAsync(existente.Id, userId);
+
+            return Ok(actualizado);
         }
     }
 }
