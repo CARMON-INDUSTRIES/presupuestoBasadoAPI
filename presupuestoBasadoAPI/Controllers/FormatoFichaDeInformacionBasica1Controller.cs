@@ -130,7 +130,7 @@ namespace presupuestoBasadoAPI.Controllers
             var pdf = new PdfDocument(writer);
             var pageSize = PageSize.LETTER;
             var doc = new Document(pdf, pageSize);
-            doc.SetMargins(40, 40, 40, 40);
+            doc.SetMargins(30, 30, 30, 30);
 
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
             var colorInstitucional = new DeviceRgb(105, 27, 49);
@@ -150,7 +150,7 @@ namespace presupuestoBasadoAPI.Controllers
             // === ENCABEZADO COMO TABLA PARA ALINEAR TEXTO Y LOGO ===
             var encabezadoTabla = new Table(UnitValue.CreatePercentArray(new float[] { 75, 25 }))
                 .UseAllAvailableWidth()
-                .SetFixedPosition(headerX, headerY - 60, headerW)
+                .SetFixedPosition(headerX, headerY - 20, headerW)
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE);
 
@@ -177,18 +177,16 @@ namespace presupuestoBasadoAPI.Controllers
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
-                    .SetWidth(85)
+                    .SetWidth(100)
                     .SetAutoScale(true)
-                    .SetFixedPosition(pageWidth - 100 - 85, pageHeight - 150);
+                    .SetFixedPosition(pageWidth - 95 - 70, pageHeight - 87);
                 doc.Add(emblema);
             }
 
             // Agregar tabla de encabezado al documento
             doc.Add(encabezadoTabla);
 
-
-
-            doc.Add(new Paragraph("\n\n\n\n\n\n\n"));
+            doc.Add(new Paragraph("\n\n\n\n"));
 
             // === SECCIÓN 1: ANTECEDENTES ===
             doc.Add(SeccionTitulo("1.- ANTECEDENTES", font, colorInstitucional));
@@ -266,7 +264,7 @@ namespace presupuestoBasadoAPI.Controllers
             }
 
             // === SECCIÓN 6: ¿ES UN PROGRAMA SOCIAL? ===
-            // === SECCIÓN 6: ¿ES UN PROGRAMA SOCIAL? ===
+
             doc.Add(SeccionTitulo("6.- ¿ES UN PROGRAMA SOCIAL?", font, colorInstitucional));
 
             var marcoPrograma = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();

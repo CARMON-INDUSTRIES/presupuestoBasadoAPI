@@ -138,5 +138,90 @@ namespace presupuestoBasadoAPI.Services
                 ProcesoIdentificacionPoblacionObjetivo = c.ProcesoIdentificacionPoblacionObjetivo
             };
         }
+
+        public async Task<CoberturaDto> GetBorradorAsync(string userId)
+        {
+            var c = await _context.Coberturas
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
+
+            return c == null ? new CoberturaDto() : new CoberturaDto
+            {
+                Id = c.Id,
+                IdentificacionCaracterizacionPoblacionPotencial = c.IdentificacionCaracterizacionPoblacionPotencial,
+                IdentificacionCaracterizacionPoblacionObjetivo = c.IdentificacionCaracterizacionPoblacionObjetivo,
+                UnidadMedida = c.UnidadMedida,
+                CuantificacionPoblacionPotencial = c.CuantificacionPoblacionPotencial,
+                CuantificacionPoblacionObjetivo = c.CuantificacionPoblacionObjetivo,
+                CuantificacionPoblacionAtendidaAnterior = c.CuantificacionPoblacionAtendidaAnterior,
+                FrecuenciaActualizacion = c.FrecuenciaActualizacion,
+                ProcesoIdentificacionPoblacionPotencial = c.ProcesoIdentificacionPoblacionPotencial,
+                ProcesoIdentificacionPoblacionObjetivo = c.ProcesoIdentificacionPoblacionObjetivo
+            };
+        }
+
+        public async Task<bool> AutoSaveAsync(CoberturaDto dto, string userId)
+        {
+            try
+            {
+                var ultimo = await _context.Coberturas
+                    .Where(x => x.UserId == userId)
+                    .OrderByDescending(x => x.Id)
+                    .FirstOrDefaultAsync();
+
+                if (ultimo == null)
+                {
+                    var nuevo = new Cobertura
+                    {
+                        UserId = userId,
+
+                        IdentificacionCaracterizacionPoblacionPotencial = dto.IdentificacionCaracterizacionPoblacionPotencial,
+                        IdentificacionCaracterizacionPoblacionObjetivo = dto.IdentificacionCaracterizacionPoblacionObjetivo,
+
+                        UnidadMedida = dto.UnidadMedida,
+
+                        CuantificacionPoblacionPotencial = dto.CuantificacionPoblacionPotencial,
+                        CuantificacionPoblacionObjetivo = dto.CuantificacionPoblacionObjetivo,
+                        CuantificacionPoblacionAtendidaAnterior = dto.CuantificacionPoblacionAtendidaAnterior,
+
+                        FrecuenciaActualizacion = dto.FrecuenciaActualizacion,
+
+                        ProcesoIdentificacionPoblacionPotencial = dto.ProcesoIdentificacionPoblacionPotencial,
+                        ProcesoIdentificacionPoblacionObjetivo = dto.ProcesoIdentificacionPoblacionObjetivo
+                    };
+
+                    _context.Coberturas.Add(nuevo);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+
+                // Actualizar el registro existente
+                ultimo.IdentificacionCaracterizacionPoblacionPotencial = dto.IdentificacionCaracterizacionPoblacionPotencial;
+                ultimo.IdentificacionCaracterizacionPoblacionObjetivo = dto.IdentificacionCaracterizacionPoblacionObjetivo;
+
+                ultimo.UnidadMedida = dto.UnidadMedida;
+
+                ultimo.CuantificacionPoblacionPotencial = dto.CuantificacionPoblacionPotencial;
+                ultimo.CuantificacionPoblacionObjetivo = dto.CuantificacionPoblacionObjetivo;
+                ultimo.CuantificacionPoblacionAtendidaAnterior = dto.CuantificacionPoblacionAtendidaAnterior;
+
+                ultimo.FrecuenciaActualizacion = dto.FrecuenciaActualizacion;
+
+                ultimo.ProcesoIdentificacionPoblacionPotencial = dto.ProcesoIdentificacionPoblacionPotencial;
+                ultimo.ProcesoIdentificacionPoblacionObjetivo = dto.ProcesoIdentificacionPoblacionObjetivo;
+
+                _context.Coberturas.Update(ultimo);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
     }
 }

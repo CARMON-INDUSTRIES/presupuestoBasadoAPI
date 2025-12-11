@@ -80,7 +80,7 @@ namespace presupuestoBasadoAPI.Controllers
             var pdf = new PdfDocument(writer);
             var doc = new Document(pdf);
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
-            doc.SetMargins(30, 40, 30, 40);
+            doc.SetMargins(30, 30, 30, 30);
 
             var colorInstitucional = new DeviceRgb(105, 27, 49);
 
@@ -99,27 +99,18 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetPaddingLeft(10)
                 .SetPaddingTop(5));
 
+            float pageWidth = pdf.GetDefaultPageSize().GetWidth();
+            float pageHeight = pdf.GetDefaultPageSize().GetHeight();
+
             // === Emblema dinámico según entidad ===
             if (System.IO.File.Exists(emblemaPath))
             {
-                try
-                {
-                    var emblema = new Image(ImageDataFactory.Create(emblemaPath))
-                        .SetWidth(85)
-                        .SetAutoScale(true)
-                        .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
-
-                    encabezadoTabla.AddCell(new Cell()
-                        .Add(emblema)
-                        .SetBorder(Border.NO_BORDER)
-                        .SetTextAlignment(TextAlignment.RIGHT)
-                        .SetPaddingRight(10));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"[PDF] Error al cargar emblema: {ex.Message}");
-                    encabezadoTabla.AddCell(new Cell().SetBorder(Border.NO_BORDER));
-                }
+                var emblema = new Image(ImageDataFactory.Create(emblemaPath))
+                    .SetWidth(95)
+                    .SetAutoScale(true)
+                    .SetFixedPosition(pageWidth - 95 - 70, pageHeight - 87);
+                doc.Add(emblema);
+            
             }
             else
             {
@@ -211,7 +202,7 @@ namespace presupuestoBasadoAPI.Controllers
             // === FIRMAS ===
             var firmas = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             firmas.AddCell(CeldaFirma($"\n\n\n\n(Nombre y firma)\n{usuario.NombreCompleto ?? usuario.UserName ?? "Responsable de la MIR"}", font));
-            firmas.AddCell(CeldaFirma("\n\n\n\n(Nombre y firma)\nDirector/a", font));
+            firmas.AddCell(CeldaFirma("\n\n\n\n(Nombre y firma)\nAntonio Medellin Cordero", font));
             doc.Add(firmas);
 
             doc.Close();

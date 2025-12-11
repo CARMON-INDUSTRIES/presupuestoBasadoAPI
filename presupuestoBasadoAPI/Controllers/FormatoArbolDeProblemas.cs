@@ -194,6 +194,9 @@ namespace presupuestoBasadoAPI.Controllers
                 var rect = page.GetPageSize();
                 var layout = new iText.Layout.Canvas(canvas, rect);
 
+
+                doc.Add(new Paragraph("\n\n\n\n"));
+
                 float yHeader = rect.GetHeight() - 40;
                 layout.ShowTextAligned(
                     new Paragraph("Anexo 4 - Árbol de Problemas")
@@ -205,9 +208,9 @@ namespace presupuestoBasadoAPI.Controllers
                     try
                     {
                         var emblemaData = ImageDataFactory.Create(emblemaPath);
-                        var emblema = new iText.Layout.Element.Image(emblemaData)
-                            .ScaleAbsolute(60, 60)
-                            .SetFixedPosition(rect.GetWidth() - 80, yHeader - 30);
+                        var emblema = new Image(emblemaData)
+                        .SetWidth(100)
+                            .SetFixedPosition(rect.GetWidth() - 130, yHeader - 50);
                         layout.Add(emblema);
                     }
                     catch (Exception ex)

@@ -108,7 +108,7 @@ namespace presupuestoBasadoAPI.Controllers
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
                     .SetWidth(85)
                     .SetAutoScale(true)
-                    .SetFixedPosition(pageWidth - 100 - 85, pageHeight - 70);
+                    .SetFixedPosition(pageWidth - 100 - 85, pageHeight - 95);
                 doc.Add(emblema);
             }
 
@@ -117,7 +117,7 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetFont(fontBold)
                 .SetFontSize(14)
                 .SetTextAlignment(TextAlignment.LEFT)
-                .SetMarginBottom(10));
+                .SetMarginBottom(29));
 
             // === I. DATOS DE IDENTIFICACIÓN DEL PROGRAMA ===
             document.Add(SeccionTitulo("I. DATOS DE IDENTIFICACIÓN DEL PROGRAMA", colorRojo));
@@ -228,13 +228,13 @@ namespace presupuestoBasadoAPI.Controllers
             }
             document.Add(tMetas);
 
-            document.Add(SeccionTitulo("IV. CREMA", colorRojo));
+            //document.Add(SeccionTitulo("IV. CREMA", colorRojo));
 
-            var cremaTexto = indicador.Crema != null
-                ? string.Join(", ", indicador.Crema.Select(c => $"{c.Key}: {c.Value}"))
-                : "N/A";
+            //var cremaTexto = indicador.Crema != null
+            //    ? string.Join(", ", indicador.Crema.Select(c => $"{c.Key}: {c.Value}"))
+            //    : "N/A";
 
-            document.Add(new Paragraph($"Crema: {cremaTexto}"));
+            //document.Add(new Paragraph($"Crema: {cremaTexto}"));
 
             // === IV. LÍNEA DE ACCIÓN (solo la última capturada) ===
             document.Add(SeccionTitulo("V. LÍNEA DE ACCIÓN", colorRojo));

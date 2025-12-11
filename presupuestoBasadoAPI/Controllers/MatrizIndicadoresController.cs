@@ -8,7 +8,7 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔹 Requiere token válido
+    [Authorize] 
     public class MatrizIndicadoresController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -18,11 +18,9 @@ namespace presupuestoBasadoAPI.Controllers
             _context = context;
         }
 
-        // ✅ Obtener el ID real del usuario autenticado
         private string GetUserId() =>
             User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
-        // GET: /MatrizIndicadores
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MatrizIndicadores>>> GetAll()
         {
@@ -34,7 +32,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(lista);
         }
 
-        // GET: /MatrizIndicadores/ultimo
         [HttpGet("ultimo")]
         public async Task<ActionResult<MatrizIndicadores>> GetUltimo()
         {
@@ -49,16 +46,13 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(ultimo);
         }
 
-        // POST: /MatrizIndicadores
         [HttpPost]
         public async Task<ActionResult<MatrizIndicadores>> Post([FromBody] MatrizIndicadores matriz)
         {
             var userId = GetUserId();
 
-            // 🔹 Asociar el UserId a la matriz principal
             matriz.UserId = userId;
 
-            // 🔹 Asociar el UserId a cada fila dentro de la matriz
             foreach (var fila in matriz.Filas)
             {
                 fila.UserId = userId;
@@ -70,7 +64,6 @@ namespace presupuestoBasadoAPI.Controllers
             return CreatedAtAction(nameof(GetUltimo), new { id = matriz.Id }, matriz);
         }
 
-        // PUT: /MatrizIndicadores/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] MatrizIndicadores matriz)
         {
@@ -79,7 +72,6 @@ namespace presupuestoBasadoAPI.Controllers
             var userId = GetUserId();
             matriz.UserId = userId;
 
-            // 🔹 Asegurar que las filas también mantengan el UserId correcto
             foreach (var fila in matriz.Filas)
             {
                 fila.UserId = userId;
@@ -91,7 +83,6 @@ namespace presupuestoBasadoAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: /MatrizIndicadores/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

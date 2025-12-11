@@ -84,7 +84,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             float pageWidth = PageSize.LETTER.GetWidth();
             float pageHeight = PageSize.LETTER.GetHeight();
-            float headerY = pageHeight - 70;
+            float headerY = pageHeight - 80;
 
             // === ENCABEZADO ===
             if (System.IO.File.Exists(emblemaPath))
@@ -93,7 +93,7 @@ namespace presupuestoBasadoAPI.Controllers
                 {
                     var emblemaData = ImageDataFactory.Create(emblemaPath);
                     var emblema = new Image(emblemaData)
-                        .SetWidth(90)
+                        .SetWidth(100)
                         .SetFixedPosition(pageWidth - 130, headerY - 10);
                     doc.Add(emblema);
                 }

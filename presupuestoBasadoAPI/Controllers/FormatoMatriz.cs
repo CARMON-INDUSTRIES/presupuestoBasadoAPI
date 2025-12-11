@@ -110,15 +110,17 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetFixedPosition(36, pageHeight - 50, pageWidth - 72);
             doc.Add(titulo);
 
-            // === Emblema ===
+
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
                     .SetWidth(85)
                     .SetAutoScale(true)
-                    .SetFixedPosition(pageWidth - 50 - 85, pageHeight - 100);
+                    .SetFixedPosition(pageWidth - 100 - 85, pageHeight - 100);
                 doc.Add(emblema);
+
             }
+
 
             doc.Add(new Paragraph("\n\n\n"));
 
@@ -153,19 +155,19 @@ namespace presupuestoBasadoAPI.Controllers
             var niveles = new List<string>();
             if (arbol != null)
             {
-                niveles.Add($"Fin: {arbol.Fin ?? string.Empty}");
-                niveles.Add($"Propósito: {arbol.ObjetivoCentral ?? string.Empty}");
+                niveles.Add($"Fin: ");
+                niveles.Add($"Propósito: ");
 
                 if (arbol.Componentes != null)
                 {
                     foreach (var comp in arbol.Componentes)
                     {
-                        niveles.Add($"Componente: {comp.Nombre ?? string.Empty}");
+                        niveles.Add($"Componente: ");
                         if (comp.Medios != null)
                         {
                             foreach (var medio in comp.Medios)
                             {
-                                niveles.Add($"Actividad: {medio ?? string.Empty}");
+                                niveles.Add($"Actividad: ");
                             }
                         }
                     }

@@ -102,7 +102,7 @@ namespace presupuestoBasadoAPI.Controllers
             using var writer = new PdfWriter(ms);
             using var pdf = new PdfDocument(writer);
             var doc = new Document(pdf, PageSize.LETTER);
-            doc.SetMargins(40, 40, 40, 40);
+            doc.SetMargins(30, 30, 30, 30);
 
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
             var colorInstitucional = new DeviceRgb(105, 27, 49);

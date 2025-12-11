@@ -118,8 +118,9 @@ namespace presupuestoBasadoAPI.Controllers
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
-                    .SetWidth(60)
-                    .SetFixedPosition(pageWidth - 50 - 50, pageHeight - 70);
+                    .SetWidth(85)
+                    .SetAutoScale(true)
+                    .SetFixedPosition(pageWidth - 100 - 85, pageHeight - 110);
                 doc.Add(emblema);
             }
 

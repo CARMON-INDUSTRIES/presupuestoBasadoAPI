@@ -89,5 +89,34 @@ namespace presupuestoBasadoAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("borrador")]
+        public async Task<ActionResult<CoberturaDto>> GetBorrador()
+        {
+            var userId = GetUserId();
+            var borrador = await _service.GetUltimoAsync(userId);
+
+            if (borrador == null)
+            {
+                return Ok(new CoberturaDto()); // siempre devuelve algo
+            }
+
+            return Ok(borrador);
+        }
+
+        [HttpPut("autosave")]
+        public async Task<IActionResult> AutoSave([FromBody] CoberturaDto dto)
+        {
+            if (dto == null)
+                return BadRequest(new { message = "El objeto dto es requerido" });
+
+            var userId = GetUserId();
+            var ok = await _service.AutoSaveAsync(dto, userId);
+
+            if (!ok)
+                return BadRequest(new { message = "No se pudo guardar el autosave" });
+
+            return Ok(new { message = "Autosave realizado correctamente" });
+        }
     }
 }

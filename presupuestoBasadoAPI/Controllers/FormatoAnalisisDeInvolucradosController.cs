@@ -105,18 +105,19 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE));
 
             // Lado derecho (emblema)
+            float pageWidth = pdf.GetDefaultPageSize().GetWidth();
+            float pageHeight = pdf.GetDefaultPageSize().GetHeight();
+
             if (System.IO.File.Exists(emblemaPath))
             {
-                Image emblema = new Image(ImageDataFactory.Create(emblemaPath))
-                    .SetHeight(60)
+                var emblema = new Image(ImageDataFactory.Create(emblemaPath))
+                    .SetWidth(85)
                     .SetAutoScale(true)
-                    .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
-                encabezado.AddCell(new Cell()
-                    .Add(emblema)
-                    .SetBorder(Border.NO_BORDER)
-                    .SetTextAlignment(TextAlignment.RIGHT)
-                    .SetVerticalAlignment(VerticalAlignment.MIDDLE));
+                    .SetFixedPosition(pageWidth - 100 - 85, pageHeight - 93);
+                doc.Add(emblema);
+
             }
+
             else
             {
                 encabezado.AddCell(new Cell().SetBorder(Border.NO_BORDER)); // espacio vacío

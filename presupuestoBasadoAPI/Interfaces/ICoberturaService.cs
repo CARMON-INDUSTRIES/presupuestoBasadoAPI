@@ -12,5 +12,7 @@ namespace presupuestoBasadoAPI.Services
         Task<bool> UpdateAsync(int id, CoberturaDto dto, string userId);
         Task<bool> DeleteAsync(int id, string userId);
         Task<CoberturaDto?> GetUltimoAsync(string userId);
+        Task<bool> AutoSaveAsync(CoberturaDto dto, string userId);
+
     }
 }

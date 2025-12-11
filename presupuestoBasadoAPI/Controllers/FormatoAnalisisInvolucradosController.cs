@@ -115,7 +115,7 @@ namespace presupuestoBasadoAPI.Controllers
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
-                    .SetWidth(85)
+                    .SetWidth(75)
                     .SetAutoScale(true)
                     .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
 
