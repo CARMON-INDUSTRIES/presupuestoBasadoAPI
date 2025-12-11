@@ -220,7 +220,7 @@ namespace presupuestoBasadoAPI.Controllers
                 }
                 else
                 {
-                    Console.WriteLine($"⚠️ No se encontró el emblema en: {emblemaPath}");
+                    Console.WriteLine($"No se encontró el emblema en: {emblemaPath}");
                 }
 
                 float centerX = rect.GetWidth() / 2;

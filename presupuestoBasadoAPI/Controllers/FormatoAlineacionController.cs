@@ -121,11 +121,11 @@ namespace presupuestoBasadoAPI.Controllers
             doc.Add(encabezadoTabla);
             doc.Add(new Paragraph("\n"));
 
-            // === 1. ANTECEDENTES ===
+            // === 1. ANTECEDENTES === CHECAR PORQUE NO CAMBIA DE DIF
             doc.Add(SeccionTitulo("1.- ANTECEDENTES", font, colorInstitucional));
             var antecedentes = new Table(UnitValue.CreatePercentArray(new float[] { 30, 70 })).UseAllAvailableWidth();
             antecedentes.AddCell(CeldaEtiqueta("Unidad responsable", font));
-            antecedentes.AddCell(CeldaDato(usuario.UnidadAdministrativa?.Unidad ?? "", font));
+            antecedentes.AddCell(CeldaDato( "DIF", font));
             antecedentes.AddCell(CeldaEtiqueta("Programa presupuestario", font));
             antecedentes.AddCell(CeldaDato(usuario.ProgramaPresupuestario ?? "", font));
             antecedentes.AddCell(CeldaEtiqueta("Entidad", font));
