@@ -99,5 +99,138 @@ namespace presupuestoBasadoAPI.Controllers
 
             return NoContent();
         }
+        [HttpPost("borrador")]
+        public async Task<ActionResult<MatrizIndicadores>> GuardarBorrador([FromBody] MatrizIndicadores dto)
+        {
+            if (dto == null)
+                return BadRequest(new { message = "El DTO es requerido" });
+
+            var userId = GetUserId();
+
+            var existente = await _context.MatricesIndicadores
+                .Where(m => m.UserId == userId)
+                .Include(m => m.Filas)
+                .OrderByDescending(m => m.Id)
+                .FirstOrDefaultAsync();
+
+            // Crear borrador si no hay ninguno
+            if (existente == null)
+            {
+                dto.Id = 0;
+                dto.UserId = userId;
+
+                foreach (var fila in dto.Filas)
+                {
+                    fila.Id = 0;
+                    fila.UserId = userId;
+                }
+
+                _context.MatricesIndicadores.Add(dto);
+                await _context.SaveChangesAsync();
+                return Ok(dto);
+            }
+
+            // Actualizar campos básicos
+            existente.UnidadResponsable = dto.UnidadResponsable;
+            existente.UnidadPresupuestal = dto.UnidadPresupuestal;
+            existente.ProgramaSectorial = dto.ProgramaSectorial;
+            existente.ProgramaPresupuestario = dto.ProgramaPresupuestario;
+            existente.ResponsableMIR = dto.ResponsableMIR;
+
+            // ❗ ELIMINAR FILAS ANTERIORES EN BD (la forma correcta)
+            _context.FilaMatriz.RemoveRange(existente.Filas);
+            await _context.SaveChangesAsync();
+
+            // ❗ AGREGAR NUEVAS FILAS
+            existente.Filas = new List<FilaMatriz>();
+
+            foreach (var fila in dto.Filas)
+            {
+                existente.Filas.Add(new FilaMatriz
+                {
+                    Id = 0,
+                    Nivel = fila.Nivel,
+                    ResumenNarrativo = fila.ResumenNarrativo,
+                    Indicadores = fila.Indicadores,
+                    Medios = fila.Medios,
+                    Supuestos = fila.Supuestos,
+                    UserId = userId
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(existente);
+        }
+
+
+
+
+        [HttpPut("autosave")]
+        public async Task<IActionResult> AutoSave([FromBody] MatrizIndicadores dto)
+        {
+            if (dto == null)
+                return BadRequest(new { message = "El DTO es requerido" });
+
+            var userId = GetUserId();
+
+            var existente = await _context.MatricesIndicadores
+                .Where(m => m.UserId == userId)
+                .Include(m => m.Filas)
+                .OrderByDescending(m => m.Id)
+                .FirstOrDefaultAsync();
+
+            // --- PRIMER BORRADOR ---
+            if (existente == null)
+            {
+                dto.Id = 0;
+                dto.UserId = userId;
+
+                foreach (var fila in dto.Filas)
+                {
+                    fila.Id = 0;
+                    fila.UserId = userId;
+                }
+
+                _context.MatricesIndicadores.Add(dto);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Autosave creado", id = dto.Id });
+            }
+
+            // --- ACTUALIZACIÓN ---
+            existente.UnidadResponsable = dto.UnidadResponsable;
+            existente.UnidadPresupuestal = dto.UnidadPresupuestal;
+            existente.ProgramaSectorial = dto.ProgramaSectorial;
+            existente.ProgramaPresupuestario = dto.ProgramaPresupuestario;
+            existente.ResponsableMIR = dto.ResponsableMIR;
+
+            // 🔥 limpiar filas pero SIN USAR RemoveRange
+            existente.Filas.Clear();
+            await _context.SaveChangesAsync();   // <-- EF ya soltó las referencias
+
+            existente.Filas = new List<FilaMatriz>();
+
+            foreach (var fila in dto.Filas)
+            {
+                existente.Filas.Add(new FilaMatriz
+                {
+                    Id = 0,
+                    Nivel = fila.Nivel,
+                    ResumenNarrativo = fila.ResumenNarrativo,
+                    Indicadores = fila.Indicadores,
+                    Medios = fila.Medios,
+                    Supuestos = fila.Supuestos,
+                    UserId = userId
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Autosave actualizado", id = existente.Id });
+        }
+
+
+
     }
 }
