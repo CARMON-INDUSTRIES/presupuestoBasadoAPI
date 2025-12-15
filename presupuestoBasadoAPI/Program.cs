@@ -54,6 +54,8 @@ builder.Services.AddScoped<IProgramaSocialService, ProgramaSocialService>();
 builder.Services.AddScoped<IPadronBeneficiariosService, PadronBeneficiariosService>();
 builder.Services.AddScoped<IReglasOperacionService, ReglasOperacionService>();
 builder.Services.AddScoped<IArbolObjetivosService, ArbolObjetivosService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IIAService, IAService>();
 builder.Services.AddScoped<IUsuarioActualService, UsuarioActualService>();
 builder.Services.AddSingleton<CloudinaryService>();
 builder.Services.AddHttpContextAccessor();

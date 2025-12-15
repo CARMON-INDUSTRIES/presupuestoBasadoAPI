@@ -40,5 +40,34 @@ namespace presupuestoBasadoAPI.Controllers
             var result = await _service.CrearAsync(dto, userId);
             return Ok(result);
         }
+
+        [HttpPost("convertir-positivo")]
+        public async Task<IActionResult> ConvertirTextoAPositivo(
+    [FromBody] IAConvertirTextoDto dto,
+    [FromServices] IIAService iaService)
+        {
+            if (string.IsNullOrWhiteSpace(dto.TextoBase))
+                return BadRequest("El texto base es obligatorio.");
+
+            var nivelesValidos = new[]
+            {
+        "FIN",
+        "OBJETIVO_CENTRAL",
+        "COMPONENTE",
+        "RESULTADO",
+        "MEDIO"
+    };
+
+            if (!nivelesValidos.Contains(dto.Nivel))
+                return BadRequest("Nivel de árbol no válido.");
+
+            var resultado = await iaService.ConvertirAPositivoAsync(
+                dto.TextoBase,
+                dto.Nivel
+            );
+
+            return Ok(new { textoPositivo = resultado });
+        }
+
     }
 }

@@ -70,6 +70,50 @@ namespace presupuestoBasadoAPI.Controllers
             if (!deleted) return NotFound();
             return NoContent();
         }
+
+        [HttpGet("borrador")]
+        public async Task<ActionResult<DisenoIntervencionPublicaDto>> GetBorrador()
+        {
+            var userId = GetUserId();
+            var ultimo = await _service.GetUltimoAsync(userId);
+
+            if (ultimo == null)
+            {
+                var nuevo = new DisenoIntervencionPublicaDto
+                {
+                    EtapasIntervencion = "",
+                    EscenariosFuturosEsperar = "",
+                    Componentes = new List<ComponenteDto>()
+                };
+
+                var creado = await _service.CreateAsync(nuevo, userId);
+                return Ok(creado);
+            }
+
+            return Ok(ultimo);
+        }
+
+        [HttpPut("autosave")]
+        public async Task<ActionResult<DisenoIntervencionPublicaDto>> AutoSave(
+            [FromBody] DisenoIntervencionPublicaDto dto)
+        {
+            var userId = GetUserId();
+
+            var existente = await _service.GetUltimoAsync(userId);
+
+            if (existente == null)
+            {
+                var creado = await _service.CreateAsync(dto, userId);
+                return Ok(creado);
+            }
+
+            dto.Id = existente.Id;
+            await _service.UpdateAsync(existente.Id, dto, userId);
+
+            var actualizado = await _service.GetByIdAsync(existente.Id, userId);
+            return Ok(actualizado);
+        }
+
     }
 
 }
