@@ -29,7 +29,7 @@ namespace presupuestoBasadoAPI.Helpers
 
             var token = new JwtSecurityToken(
                 issuer: config["Jwt:Issuer"],
-                audience: config["Jwt:Issuer"], // puedes usar Audience si lo defines diferente
+                audience: config["Jwt:Issuer"], 
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
                 signingCredentials: creds

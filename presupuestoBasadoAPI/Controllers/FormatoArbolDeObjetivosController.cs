@@ -34,7 +34,7 @@ namespace presupuestoBasadoAPI.Controllers
         private string GetEmblemaPath(string userId)
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png"; 
 
             if (usuario?.Entidad != null && !string.IsNullOrEmpty(usuario.Entidad.Nombre))
             {
@@ -75,7 +75,6 @@ namespace presupuestoBasadoAPI.Controllers
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
             var fontBold = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
 
-            // Colores
             var colorVino = new DeviceRgb(102, 0, 51);
             var colorBlanco = new DeviceRgb(255, 255, 255);
             var colorHeaderGris = new DeviceRgb(100, 100, 100);
@@ -86,7 +85,6 @@ namespace presupuestoBasadoAPI.Controllers
             float pageHeight = PageSize.LETTER.GetHeight();
             float headerY = pageHeight - 80;
 
-            // === ENCABEZADO ===
             if (System.IO.File.Exists(emblemaPath))
             {
                 try
@@ -114,7 +112,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetMargin(0);
             doc.Add(encabezado);
 
-            // === SECCIÓN PRINCIPAL ===
             float centerX = pageWidth / 2;
             const float padding = 6f;
             const float lineHeight = 10f;
@@ -130,12 +127,10 @@ namespace presupuestoBasadoAPI.Controllers
                 var page = pdfDoc.GetPage(p + 1);
                 var canvas = new iText.Kernel.Pdf.Canvas.PdfCanvas(page);
 
-                // === FIN ===
                 float yFin = pageHeight - margenSuperior;
                 float hFin = CalcularAlturaCaja(arbol.Fin, 240, lineHeight, padding);
                 EscribirCajaConEncabezado(canvas, font, centerX - 120, yFin, 240, hFin, "Fin", arbol.Fin, colorVino, colorBlanco);
 
-                // === RESULTADOS ===
                 float yResultado = yFin - hFin - 80;
                 float hResultado = 0f;
                 var compsPagina = componentes.Skip(p * compPorPagina).Take(compPorPagina).ToList();
@@ -155,13 +150,11 @@ namespace presupuestoBasadoAPI.Controllers
                     }
                 }
 
-                // === PROPÓSITO CENTRAL ===
                 float yProposito = yResultado - (hResultado > 0 ? hResultado + 80 : 100);
                 float hProposito = CalcularAlturaCaja(arbol.ObjetivoCentral, 240, lineHeight, padding);
                 EscribirCajaConEncabezado(canvas, font, centerX - 120, yProposito, 240, hProposito, "Propósito", arbol.ObjetivoCentral, colorVino, colorBlanco);
                 DibujarFlecha(canvas, centerX, yProposito + hProposito, resultados.Any() ? yResultado : yFin, colorVino);
 
-                // === COMPONENTES ===
                 float totalWidthComp = compsPagina.Count * 140f;
                 float xStart = centerX - totalWidthComp / 2;
                 float yComponente = yProposito - 130;
@@ -172,7 +165,6 @@ namespace presupuestoBasadoAPI.Controllers
                     EscribirCajaConEncabezado(canvas, font, xStart, yComponente, 140, hComp, "Componente", comp.Nombre, colorHeaderGris, colorBlanco);
                     DibujarFlecha(canvas, xStart + 70, yComponente + hComp, yProposito, colorVino);
 
-                    // === MEDIOS ===
                     float yMedio = yComponente - 110;
                     if (comp.Medios != null && comp.Medios.Any())
                     {
@@ -192,8 +184,6 @@ namespace presupuestoBasadoAPI.Controllers
             doc.Close();
             return File(ms.ToArray(), "application/pdf", "FormatoArbolDeObjetivos.pdf");
         }
-
-        // ==== FUNCIONES AUXILIARES ====
 
         private float CalcularAlturaCaja(string texto, float anchoMaximo, float lineHeight, float padding)
         {

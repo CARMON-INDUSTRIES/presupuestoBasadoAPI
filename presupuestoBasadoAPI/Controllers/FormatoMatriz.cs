@@ -133,14 +133,12 @@ namespace presupuestoBasadoAPI.Controllers
                 .UseAllAvailableWidth()
                 .SetBorder(new SolidBorder(colorInstitucional, 1f));
 
-            // Encabezados
             tabla.AddHeaderCell(CeldaHeaderTabla("Nivel", font, colorInstitucional));
             tabla.AddHeaderCell(CeldaHeaderTabla("Resumen Narrativo", font, colorInstitucional));
             tabla.AddHeaderCell(CeldaHeaderTabla("Indicadores (solo nombre)", font, colorInstitucional));
             tabla.AddHeaderCell(CeldaHeaderTabla("Medios de verificación", font, colorInstitucional));
             tabla.AddHeaderCell(CeldaHeaderTabla("Supuestos", font, colorInstitucional));
 
-            // 🔥 NUEVO: filas ordenadas reales, sin duplicados
             var filasOrdenadas = filasGuardadas
                 .Where(f => !string.IsNullOrWhiteSpace(f.Nivel))
                 .OrderBy(f => f.Id)

@@ -17,8 +17,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<AlineacionMunicipio> AlineacionesMunicipio { get; set; }
     public DbSet<Ramo> Ramos { get; set; }
     public DbSet<ClasificacionFuncional> ClasificacionesFuncionales { get; set; }
-
-    //anexo 1
     public DbSet<Antecedente> Antecedentes { get; set; }
     public DbSet<IdentificacionDescripcionProblema> IdentificacionDescripcionProblemas { get; set; }
     public DbSet<DeterminacionJustificacionObjetivos> DeterminacionJustificacionObjetivo { get; set; }
@@ -37,12 +35,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<AlternativaEvaluacion> AlternativasEvaluacion { get; set; } = default!;
     public DbSet<MatrizIndicadores> MatricesIndicadores { get; set; }
     public DbSet<FilaMatriz> FilaMatriz { get; set; }
-
     public DbSet<FichaIndicador> Fichas { get; set; }
     public DbSet<IndicadorDetalle> IndicadoresDetalle { get; set; }
     public DbSet<MetaProgramada> MetasProgramadas { get; set; }
     public DbSet<LineaAccion> LineasAccion { get; set; }
-
     public DbSet<Indicador> Indicadores { get; set; }
     public DbSet<Meta> Metas { get; set; }
     public DbSet<LineaBase> LineasBase { get; set; }
@@ -52,14 +48,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ObjetivoEstatal> ObjetivoEstatal { get; set; }
     public DbSet<EstrategiaEstatal> EstrategiaEstatal { get; set; }
     public DbSet<LineaDeAccionEstatal> LineaDeAccionEstatal { get; set; }
-
-    // === Municipal ===
     public DbSet<AcuerdoMunicipal> AcuerdoMunicipal { get; set; }
     public DbSet<ObjetivoMunicipal> ObjetivoMunicipal { get; set; }
     public DbSet<EstrategiaMunicipal> EstrategiaMunicipal { get; set; }
     public DbSet<LineaDeAccionMunicipal> LineaDeAccionMunicipal { get; set; }
-
-    // === Clasificación Funcional ===
     public DbSet<Finalidad> Finalidad { get; set; }
     public DbSet<Funcion> Funcion { get; set; }
     public DbSet<Subfuncion> SubFuncion { get; set; }
@@ -78,13 +70,13 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
            .HasMany(u => u.Usuarios)
            .WithOne(u => u.UnidadAdministrativa)
            .HasForeignKey(u => u.UnidadAdministrativaId)
-           .OnDelete(DeleteBehavior.Restrict); // O Cascade
+           .OnDelete(DeleteBehavior.Restrict); 
 
         modelBuilder.Entity<Entidad>()
    .HasMany(u => u.Usuarios)
    .WithOne(u => u.Entidad)
    .HasForeignKey(u => u.EntidadId)
-   .OnDelete(DeleteBehavior.Restrict); // O Cascade
+   .OnDelete(DeleteBehavior.Restrict); 
 
         modelBuilder.Entity<Componente>()
         .HasOne(c => c.Resultado)
@@ -92,7 +84,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         .HasForeignKey<Resultado>(r => r.ComponenteId)
         .OnDelete(DeleteBehavior.Cascade);
 
-        // Aseguramos unicidad del FK (Resultado.ComponenteId)
         modelBuilder.Entity<Resultado>()
             .HasIndex(r => r.ComponenteId)
             .IsUnique();

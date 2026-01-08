@@ -16,7 +16,6 @@ namespace presupuestoBasadoAPI.Controllers
             _context = context;
         }
 
-        // POST: api/Indicador
         [HttpPost]
         public async Task<ActionResult<Indicador>> PostIndicador([FromBody] Indicador indicador)
         {
@@ -25,7 +24,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             try
             {
-                // Si viene con LineaBase y metas, EF Core se encarga de las relaciones
                 _context.Indicadores.Add(indicador);
                 await _context.SaveChangesAsync();
 
@@ -37,7 +35,6 @@ namespace presupuestoBasadoAPI.Controllers
             }
         }
 
-        // GET: api/Indicador/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Indicador>> GetIndicador(int id)
         {
@@ -53,7 +50,6 @@ namespace presupuestoBasadoAPI.Controllers
             return indicador;
         }
 
-        // GET: api/Indicador
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Indicador>>> GetIndicadores()
         {

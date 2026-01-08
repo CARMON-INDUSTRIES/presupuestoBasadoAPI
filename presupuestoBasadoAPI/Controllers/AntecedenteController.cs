@@ -81,7 +81,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             if (ultimo == null)
             {
-                // crea registro vacío si no existe
                 var nuevo = new AntecedenteDto
                 {
                     UserId = userId!,
@@ -103,7 +102,6 @@ namespace presupuestoBasadoAPI.Controllers
         {
             var userId = await _usuarioActualService.ObtenerUserIdAsync();
 
-            // buscar si existe registro único del usuario
             var existente = await _service.GetUltimoAsync(userId!);
 
             if (existente == null)
@@ -113,7 +111,6 @@ namespace presupuestoBasadoAPI.Controllers
                 return Ok(creado);
             }
 
-            // sobrescribir ID del usuario para evitar manipulación
             dto.Id = existente.Id;
             dto.UserId = userId!;
 

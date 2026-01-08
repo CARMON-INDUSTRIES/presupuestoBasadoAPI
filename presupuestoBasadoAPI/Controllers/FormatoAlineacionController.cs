@@ -43,7 +43,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             var usuario = _context.Users
                 .Include(u => u.UnidadAdministrativa)
-                .Include(u => u.Entidad) // 🔹 Importante: incluir la entidad
+                .Include(u => u.Entidad) 
                 .FirstOrDefault(u => u.Id == userId);
 
             var alineacionMunicipio = _context.AlineacionesMunicipio
@@ -64,9 +64,8 @@ namespace presupuestoBasadoAPI.Controllers
             if (usuario == null || (alineacionMunicipio == null && alineacionEstado == null) || clasificacion == null)
                 return NotFound("Faltan registros necesarios para generar el PDF");
 
-            // === Determinar emblema según la entidad ===
             string entidadNombre = usuario.Entidad?.Nombre?.ToLower() ?? "";
-            string emblemaPath = Path.Combine(_imagesFolder, "emblema.png"); // valor por defecto
+            string emblemaPath = Path.Combine(_imagesFolder, "emblema.png");
 
             if (!string.IsNullOrEmpty(entidadNombre))
             {
@@ -84,7 +83,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             var colorInstitucional = new DeviceRgb(105, 27, 49);
 
-            // === ENCABEZADO ===
             var encabezadoTabla = new Table(UnitValue.CreatePercentArray(new float[] { 75, 25 }))
                 .UseAllAvailableWidth()
                 .SetBorder(Border.NO_BORDER);
@@ -102,7 +100,6 @@ namespace presupuestoBasadoAPI.Controllers
             float pageWidth = pdf.GetDefaultPageSize().GetWidth();
             float pageHeight = pdf.GetDefaultPageSize().GetHeight();
 
-            // === Emblema dinámico según entidad ===
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
@@ -125,7 +122,7 @@ namespace presupuestoBasadoAPI.Controllers
             doc.Add(SeccionTitulo("1.- ANTECEDENTES", font, colorInstitucional));
             var antecedentes = new Table(UnitValue.CreatePercentArray(new float[] { 30, 70 })).UseAllAvailableWidth();
             antecedentes.AddCell(CeldaEtiqueta("Unidad responsable", font));
-            antecedentes.AddCell(CeldaDato( "DIF", font));
+            antecedentes.AddCell(CeldaDato( usuario.UnidadAdministrativa?.Unidad , font));
             antecedentes.AddCell(CeldaEtiqueta("Programa presupuestario", font));
             antecedentes.AddCell(CeldaDato(usuario.ProgramaPresupuestario ?? "", font));
             antecedentes.AddCell(CeldaEtiqueta("Entidad", font));
@@ -202,7 +199,7 @@ namespace presupuestoBasadoAPI.Controllers
             // === FIRMAS ===
             var firmas = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             firmas.AddCell(CeldaFirma($"\n\n\n\n(Nombre y firma)\n{usuario.NombreCompleto ?? usuario.UserName ?? "Responsable de la MIR"}", font));
-            firmas.AddCell(CeldaFirma("\n\n\n\n(Nombre y firma)\nAntonio Medellin Cordero", font));
+            firmas.AddCell(CeldaFirma($"\n\n\n\n(Nombre y firma)\n{usuario.Coordinador}", font));
             doc.Add(firmas);
 
             doc.Close();

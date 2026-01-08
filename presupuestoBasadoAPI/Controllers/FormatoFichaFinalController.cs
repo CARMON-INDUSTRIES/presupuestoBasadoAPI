@@ -38,7 +38,7 @@ namespace presupuestoBasadoAPI.Controllers
         private string GetEmblemaPath(string userId)
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png"; 
 
             if (usuario?.Entidad != null && !string.IsNullOrWhiteSpace(usuario.Entidad.Nombre))
             {
@@ -102,7 +102,6 @@ namespace presupuestoBasadoAPI.Controllers
             float pageWidth = pdf.GetDefaultPageSize().GetWidth();
             float pageHeight = pdf.GetDefaultPageSize().GetHeight();
 
-            // === Emblema superior derecho ===
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
@@ -112,14 +111,12 @@ namespace presupuestoBasadoAPI.Controllers
                 doc.Add(emblema);
             }
 
-            // === Título principal (sin rectángulo) ===
             document.Add(new Paragraph("Ficha Técnica del Indicador")
                 .SetFont(fontBold)
                 .SetFontSize(14)
                 .SetTextAlignment(TextAlignment.LEFT)
                 .SetMarginBottom(29));
 
-            // === I. DATOS DE IDENTIFICACIÓN DEL PROGRAMA ===
             document.Add(SeccionTitulo("I. DATOS DE IDENTIFICACIÓN DEL PROGRAMA", colorRojo));
 
             var tProg = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
@@ -138,7 +135,6 @@ namespace presupuestoBasadoAPI.Controllers
             document.Add(tProg);
 
 
-            // === II. DATOS DEL INDICADOR SELECCIONADO ===
             var indicador = indicadores.First();
             document.Add(SeccionTitulo("II. DATOS DE IDENTIFICACIÓN DEL INDICADOR", colorRojo));
 
@@ -153,7 +149,6 @@ namespace presupuestoBasadoAPI.Controllers
             tIdent.AddCell(Celda(indicador.Definicion));
             document.Add(tIdent);
 
-            // === III. DATOS DEL INDICADOR ===
             document.Add(SeccionTitulo("III. DATOS DEL INDICADOR", colorRojo));
 
             var tDatos = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
@@ -180,7 +175,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetBorder(new iText.Layout.Borders.SolidBorder(ColorConstants.BLACK, 0.5f)));
             document.Add(tDatos);
 
-            // === LÍNEA BASE ===
             document.Add(SeccionTitulo("Línea Base", colorRojo));
 
             var tLinea = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 2, 2 })).UseAllAvailableWidth();
@@ -194,7 +188,6 @@ namespace presupuestoBasadoAPI.Controllers
             tLinea.AddCell(Celda(indicador.LineaBasePeriodo));
             document.Add(tLinea);
 
-            // === METAS PROGRAMADAS ===
             document.Add(SeccionTitulo("Determinación de Metas", colorRojo));
 
             var metas = ficha.MetasProgramadas
@@ -236,7 +229,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             //document.Add(new Paragraph($"Crema: {cremaTexto}"));
 
-            // === IV. LÍNEA DE ACCIÓN (solo la última capturada) ===
             document.Add(SeccionTitulo("V. LÍNEA DE ACCIÓN", colorRojo));
 
             var ultimaMunicipal = await _context.AlineacionesMunicipio
@@ -249,7 +241,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .OrderByDescending(a => a.Id)
                 .FirstOrDefaultAsync();
 
-            // Si existe estatal se usa esa; si no, la municipal
             var lineaSeleccionada = ultimaEstatal?.LineaAccion ?? ultimaMunicipal?.LineaAccion;
 
 
@@ -273,7 +264,6 @@ namespace presupuestoBasadoAPI.Controllers
             return File(ms.ToArray(), "application/pdf", $"FichaIndicador_{ficha.Id}_{indicador.Id}.pdf");
         }
 
-        // === Helpers ===
         private static Paragraph SeccionTitulo(string texto, Color colorFondo)
         {
             return new Paragraph(texto)

@@ -10,13 +10,12 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔐 Solo usuarios autenticados
+    [Authorize] 
     public class AnalisisAlternativasController : ControllerBase
     {
         private readonly AppDbContext _ctx;
         public AnalisisAlternativasController(AppDbContext ctx) => _ctx = ctx;
 
-        // Obtener el último análisis del usuario logueado
         [HttpGet("ultimo")]
         public async Task<IActionResult> GetUltimo()
         {
@@ -32,7 +31,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(item);
         }
 
-        // Obtener análisis por id solo si pertenece al usuario logueado
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -46,7 +44,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(item);
         }
 
-        // Crear nuevo análisis y asociarlo al usuario logueado
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] AnalisisAlternativasDto dto)
         {
@@ -57,7 +54,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             var analisis = new AnalisisAlternativas
             {
-                UserId = userId // 🔗 Se liga al usuario actual
+                UserId = userId 
             };
 
             foreach (var alt in dto.Alternativas)

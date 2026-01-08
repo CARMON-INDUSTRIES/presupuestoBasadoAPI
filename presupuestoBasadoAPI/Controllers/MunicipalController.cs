@@ -9,7 +9,6 @@ public class MunicipalController : ControllerBase
     private readonly AppDbContext _context;
     public MunicipalController(AppDbContext context) { _context = context; }
 
-    // crear acuerdo
     [HttpPost("acuerdo")]
     public async Task<IActionResult> CrearAcuerdo([FromBody] AcuerdoMunicipal acuerdo)
     {
@@ -18,7 +17,6 @@ public class MunicipalController : ControllerBase
         return Ok(acuerdo);
     }
 
-    // crear objetivo
     [HttpPost("objetivo")]
     public async Task<IActionResult> CrearObjetivo([FromBody] ObjetivoMunicipal objetivo)
     {
@@ -29,7 +27,6 @@ public class MunicipalController : ControllerBase
         return Ok(objetivo);
     }
 
-    // crear estrategia
     [HttpPost("estrategia")]
     public async Task<IActionResult> CrearEstrategia([FromBody] EstrategiaMunicipal estrategia)
     {
@@ -40,7 +37,6 @@ public class MunicipalController : ControllerBase
         return Ok(estrategia);
     }
 
-    // crear linea de acción
     [HttpPost("linea")]
     public async Task<IActionResult> CrearLinea([FromBody] LineaDeAccionMunicipal linea)
     {
@@ -51,30 +47,25 @@ public class MunicipalController : ControllerBase
         return Ok(linea);
     }
 
-    // obtener acuerdos (para select)
     [HttpGet("acuerdos")]
     public async Task<IActionResult> GetAcuerdos() =>
         Ok(await _context.AcuerdoMunicipal.Select(a => new { a.Id, a.Nombre }).ToListAsync());
 
-    // obtener objetivos por acuerdo
     [HttpGet("objetivos")]
     public async Task<IActionResult> GetObjetivos([FromQuery] int acuerdoId) =>
         Ok(await _context.ObjetivoMunicipal.Where(o => o.AcuerdoMunicipalId == acuerdoId)
                                            .Select(o => new { o.Id, o.Nombre }).ToListAsync());
 
-    // obtener estrategias por objetivo
     [HttpGet("estrategias")]
     public async Task<IActionResult> GetEstrategias([FromQuery] int objetivoId) =>
         Ok(await _context.EstrategiaMunicipal.Where(e => e.ObjetivoMunicipalId == objetivoId)
                                              .Select(e => new { e.Id, e.Nombre }).ToListAsync());
 
-    // obtener lineas por estrategia
     [HttpGet("lineas")]
     public async Task<IActionResult> GetLineas([FromQuery] int estrategiaId) =>
         Ok(await _context.LineaDeAccionMunicipal.Where(l => l.EstrategiaMunicipalId == estrategiaId)
                                                 .Select(l => new { l.Id, l.Nombre }).ToListAsync());
 
-    // opcional: obtener todo el árbol
     [HttpGet("todo")]
     public async Task<IActionResult> ObtenerTodo()
     {
@@ -86,7 +77,6 @@ public class MunicipalController : ControllerBase
         return Ok(data);
     }
 
-    // DTOs para recibir la jerarquía
     public class AcuerdoDTO
     {
         public string Nombre { get; set; } = string.Empty;

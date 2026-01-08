@@ -9,7 +9,7 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔹 Requiere token válido
+    [Authorize] 
     public class JustificacionProgramaController : ControllerBase
     {
         private readonly IJustificacionProgramaService _service;

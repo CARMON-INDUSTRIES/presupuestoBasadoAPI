@@ -9,7 +9,7 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔹 Requiere token válido
+    [Authorize] 
     public class IdentificacionProblemaController : ControllerBase
     {
         private readonly IIdentificacionProblemaService _service;

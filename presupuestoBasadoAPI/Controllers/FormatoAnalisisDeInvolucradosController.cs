@@ -25,7 +25,6 @@ namespace presupuestoBasadoAPI.Controllers
     {
         private readonly AppDbContext _context;
 
-        // Ruta base de imágenes
         private readonly string _imagesPath = System.IO.Path.Combine(
             System.IO.Directory.GetCurrentDirectory(), "Images");
 
@@ -51,7 +50,6 @@ namespace presupuestoBasadoAPI.Controllers
         {
             var userId = GetUserId();
 
-            // 🔹 Obtener usuario con su entidad
             var usuario = _context.Users
                 .Include(u => u.Entidad)
                 .FirstOrDefault(u => u.Id == userId);
@@ -76,8 +74,7 @@ namespace presupuestoBasadoAPI.Controllers
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
             var colorInstitucional = new DeviceRgb(105, 27, 49);
 
-            // === 🔹 Determinar emblema según la entidad del usuario ===
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png"; 
             if (usuario?.Entidad != null && !string.IsNullOrEmpty(usuario.Entidad.Nombre))
             {
                 string entidadNombre = usuario.Entidad.Nombre.Trim().ToLower();
@@ -91,11 +88,9 @@ namespace presupuestoBasadoAPI.Controllers
 
             string emblemaPath = System.IO.Path.Combine(_imagesPath, emblemaFileName);
 
-            // === ENCABEZADO ===
             var encabezado = new Table(UnitValue.CreatePercentArray(new float[] { 80, 20 }))
                 .UseAllAvailableWidth();
 
-            // Lado izquierdo (texto)
             encabezado.AddCell(new Cell()
                 .Add(new Paragraph("Anexo 3")
                     .SetFont(font).SetFontSize(14).SetBold())
@@ -104,7 +99,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE));
 
-            // Lado derecho (emblema)
             float pageWidth = pdf.GetDefaultPageSize().GetWidth();
             float pageHeight = pdf.GetDefaultPageSize().GetHeight();
 
@@ -126,7 +120,6 @@ namespace presupuestoBasadoAPI.Controllers
             doc.Add(encabezado);
             doc.Add(new Paragraph("\n"));
 
-            // === TÍTULO DE PROBLEMÁTICA CENTRAL ===
             var titulo = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
             titulo.AddCell(new Cell()
                 .Add(new Paragraph("PROBLEMÁTICA CENTRAL:")
@@ -139,7 +132,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetPadding(5));
             doc.Add(titulo);
 
-            // === RECUADRO DE PROBLEMÁTICA CENTRAL ===
             var cuadroProblema = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
             cuadroProblema.AddCell(new Cell()
                 .Add(new Paragraph(problema.ProblemaCentral ?? "")
@@ -155,7 +147,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             doc.Add(new Paragraph("\n"));
 
-            // === TABLA DE ACTORES INVOLUCRADOS ===
             var tabla = new Table(UnitValue.CreatePercentArray(new float[] { 25, 25, 25, 25 }))
                 .UseAllAvailableWidth();
 

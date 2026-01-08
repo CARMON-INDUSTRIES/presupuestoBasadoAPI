@@ -50,12 +50,11 @@ namespace presupuestoBasadoAPI.Controllers
             return userId;
         }
 
-        // 🔰 FUNCIÓN PARA OBTENER EL EMBLEMA SEGÚN LA ENTIDAD DEL USUARIO
         private string GetEmblemaPath(string userId)
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
 
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png"; 
 
             if (usuario?.Entidad != null && !string.IsNullOrEmpty(usuario.Entidad.Nombre))
             {
@@ -108,18 +107,15 @@ namespace presupuestoBasadoAPI.Controllers
             var colorInstitucional = new DeviceRgb(105, 27, 49);
             var bordeNegro = new SolidBorder(ColorConstants.BLACK, 1);
 
-            // === ENCABEZADO CON EMBLEMA ===
             var encabezado = new Table(UnitValue.CreatePercentArray(new float[] { 80, 20 }))
                 .UseAllAvailableWidth();
 
-            // Lado izquierdo (texto)
             encabezado.AddCell(new Cell()
                 .Add(new Paragraph("Anexo 2").SetFont(font).SetFontSize(14).SetBold())
                 .Add(new Paragraph("Definición del Problema").SetFont(font).SetFontSize(12))
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE));
 
-            // Lado derecho (imagen si existe)
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
@@ -134,26 +130,22 @@ namespace presupuestoBasadoAPI.Controllers
             }
             else
             {
-                encabezado.AddCell(new Cell().SetBorder(Border.NO_BORDER)); // espacio vacío
+                encabezado.AddCell(new Cell().SetBorder(Border.NO_BORDER)); 
                 Console.WriteLine($"⚠️ No se encontró el emblema en: {emblemaPath}");
             }
 
             doc.Add(encabezado);
             doc.Add(new Paragraph("\n"));
 
-            // === SECCIÓN 1 ===
             doc.Add(ContenedorSeccion("1.- POBLACIÓN Ó ÁREA DE ENFOQUE POTENCIAL",
                 cobertura.IdentificacionCaracterizacionPoblacionPotencial, font, colorInstitucional, bordeNegro));
 
-            // === SECCIÓN 2 ===
             doc.Add(ContenedorSeccion("2.- POBLACIÓN Ó ÁREA DE ENFOQUE OBJETIVO",
                 cobertura.IdentificacionCaracterizacionPoblacionObjetivo, font, colorInstitucional, bordeNegro));
 
-            // === SECCIÓN 3 ===
             doc.Add(ContenedorSeccion("3.- PROBLEMÁTICA CENTRAL (PROPÓSITO)",
                 identificacion.ProblemaCentral, font, colorInstitucional, bordeNegro));
 
-            // === SECCIÓN 4 ===
             var divMagnitud = new Div().SetBorder(bordeNegro).SetPadding(5).SetMarginBottom(10);
             divMagnitud.Add(SeccionTitulo("4.- MAGNITUD DEL PROBLEMA", font, colorInstitucional));
 
@@ -168,7 +160,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             divMagnitud.Add(tablaMagnitud);
 
-            // === NUEVA FILA: UNIDAD DE MEDIDA ===
             var tablaUnidad = new Table(UnitValue.CreatePercentArray(new float[] { 30, 70 })).UseAllAvailableWidth();
             tablaUnidad.AddCell(CeldaEncabezado("Unidad de Medida", font, colorInstitucional));
             tablaUnidad.AddCell(CeldaDato(cobertura.UnidadMedida ?? "No especificada", font, colorInstitucional));
@@ -178,7 +169,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             doc.Add(divMagnitud);
 
-            // === SECCIÓN 5 ===
             doc.Add(ContenedorSeccion("5.- EFECTO SUPERIOR (FIN)",
                 efectoSuperior?.Descripcion ?? "", font, colorInstitucional, bordeNegro));
 
@@ -188,8 +178,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             return File(ms.ToArray(), "application/pdf", "FormatoDefinicionDelProblema.pdf");
         }
-
-        // === FUNCIONES AUXILIARES ===
 
         private Div ContenedorSeccion(string titulo, string texto, PdfFont font, DeviceRgb color, Border borde)
         {

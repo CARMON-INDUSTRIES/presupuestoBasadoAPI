@@ -20,7 +20,6 @@ namespace presupuestoBasadoAPI.Controllers
             _service = service;
         }
 
-        // Método para extraer el userId del token
         private string GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         [HttpGet]
@@ -90,7 +89,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(ultimo);
         }
 
-        // PUT /autosave  -----------------------------------------
         [HttpPut("autosave")]
         public async Task<ActionResult<DeterminacionJustificacionObjetivosDto>> AutoSave(
             [FromBody] DeterminacionJustificacionObjetivosDto dto)

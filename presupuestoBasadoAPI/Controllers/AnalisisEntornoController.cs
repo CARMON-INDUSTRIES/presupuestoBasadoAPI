@@ -10,7 +10,7 @@ namespace presupuestoBasadoAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // 🔐 JWT obligatorio
+    [Authorize] 
     public class AnalisisEntornoController : ControllerBase
     {
         private readonly IAnalisisEntornoService _service;
@@ -26,7 +26,7 @@ namespace presupuestoBasadoAPI.Controllers
         public async Task<IActionResult> Post([FromBody] AnalisisEntornoDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            dto.UserId = userId; // 🔗 Se asocia al usuario actual
+            dto.UserId = userId; 
 
             var resultado = await _service.CrearAsync(dto, userId);
             return Ok(resultado);
@@ -36,7 +36,7 @@ namespace presupuestoBasadoAPI.Controllers
         public async Task<ActionResult<IEnumerable<AnalisisEntornoDto>>> GetAll()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var lista = await _service.ObtenerTodosAsync(userId); // 🔍 Filtra por usuario
+            var lista = await _service.ObtenerTodosAsync(userId);
             return Ok(lista);
         }
 
@@ -58,7 +58,7 @@ namespace presupuestoBasadoAPI.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var ultimo = await _context.AnalisisEntorno
-                .Where(p => p.UserId == userId) // 🔍 Filtrado por usuario
+                .Where(p => p.UserId == userId) 
                 .OrderByDescending(p => p.Id)
                 .FirstOrDefaultAsync();
 

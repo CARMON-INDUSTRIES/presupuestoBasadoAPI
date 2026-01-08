@@ -44,7 +44,7 @@ namespace presupuestoBasadoAPI.Controllers
         private string GetEmblemaPath(string userId)
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png"; 
 
             if (usuario?.Entidad != null && !string.IsNullOrWhiteSpace(usuario.Entidad.Nombre))
             {
@@ -68,7 +68,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .Include(u => u.UnidadAdministrativa)
                 .FirstOrDefault(u => u.Id == userId);
 
-            // === Recuperar datos ===
             var antecedente = _context.Antecedentes
                 .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.Id)
@@ -135,7 +134,6 @@ namespace presupuestoBasadoAPI.Controllers
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
             var colorInstitucional = new DeviceRgb(105, 27, 49);
 
-            // --- ENCABEZADO ---
             var firstPage = pdf.AddNewPage(pageSize);
             var canvas = new PdfCanvas(firstPage);
 
@@ -147,14 +145,12 @@ namespace presupuestoBasadoAPI.Controllers
 
             
 
-            // === ENCABEZADO COMO TABLA PARA ALINEAR TEXTO Y LOGO ===
             var encabezadoTabla = new Table(UnitValue.CreatePercentArray(new float[] { 75, 25 }))
                 .UseAllAvailableWidth()
                 .SetFixedPosition(headerX, headerY - 20, headerW)
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE);
 
-            // --- Columna 1: Texto del encabezado ---
             var textoEncabezado = new Paragraph()
                 .Add(new Text("Anexo 1\n")
                     .SetFont(font)
@@ -173,7 +169,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetPaddingLeft(10)
                 .SetPaddingTop(5));
 
-            // --- Columna 2: Imagen del emblema ---
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
@@ -183,12 +178,10 @@ namespace presupuestoBasadoAPI.Controllers
                 doc.Add(emblema);
             }
 
-            // Agregar tabla de encabezado al documento
             doc.Add(encabezadoTabla);
 
             doc.Add(new Paragraph("\n\n\n\n"));
 
-            // === SECCIÓN 1: ANTECEDENTES ===
             doc.Add(SeccionTitulo("1.- ANTECEDENTES", font, colorInstitucional));
             var tablaAntecedentes = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
             tablaAntecedentes.AddCell(CeldaAreaLibre(antecedente?.DescripcionPrograma ?? string.Empty, font));
@@ -197,7 +190,6 @@ namespace presupuestoBasadoAPI.Controllers
             tablaAntecedentes.AddCell(CeldaAreaLibre(antecedente?.ExperienciasPrevias ?? string.Empty, font));
             doc.Add(tablaAntecedentes);
 
-            // === SECCIÓN 2 ===
             doc.Add(SeccionTitulo("2.- IDENTIFICACIÓN Y DESCRIPCIÓN DEL PROBLEMA", font, colorInstitucional));
             var tablaProblema = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
             tablaProblema.AddCell(CeldaAreaLibre(problema?.ProblemaCentral ?? string.Empty, font));
@@ -216,14 +208,12 @@ namespace presupuestoBasadoAPI.Controllers
             tablaProblema.AddCell(CeldaAreaLibre(problema?.Involucrados ?? string.Empty, font));
             doc.Add(tablaProblema);
 
-            // === SECCIÓN 3 ===
             doc.Add(SeccionTitulo("3.- DETERMINACIÓN Y JUSTIFICACIÓN DE LOS OBJETIVOS DE LA INTERVENCIÓN", font, colorInstitucional));
             var tablaDet = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
             tablaDet.AddCell(CeldaAreaLibre(determinacion?.ObjetivosEspecificos ?? string.Empty, font));
             tablaDet.AddCell(CeldaAreaLibre(determinacion?.RelacionOtrosProgramas ?? string.Empty, font));
             doc.Add(tablaDet);
 
-            // === SECCIÓN 4 ===
             doc.Add(SeccionTitulo("4.- COBERTURA", font, colorInstitucional));
             var tablaCobertura = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
             tablaCobertura.AddCell(CeldaAreaLibre(cobertura?.IdentificacionCaracterizacionPoblacionPotencial ?? string.Empty, font));
@@ -241,7 +231,6 @@ namespace presupuestoBasadoAPI.Controllers
             tablaMagnitud.AddCell(new Cell(1, 3).Add(CeldaAreaLibre(cobertura?.FrecuenciaActualizacion ?? string.Empty, font)).SetBorder(new SolidBorder(colorInstitucional, 1)));
             doc.Add(tablaMagnitud);
 
-            // === SECCIÓN 5 ===
             doc.Add(SeccionTitulo("5.- DISEÑO DE LA INTERVENCIÓN PÚBLICA", font, colorInstitucional));
             if (diseno != null)
             {
@@ -263,7 +252,6 @@ namespace presupuestoBasadoAPI.Controllers
                 }
             }
 
-            // === SECCIÓN 6: ¿ES UN PROGRAMA SOCIAL? ===
 
             doc.Add(SeccionTitulo("6.- ¿ES UN PROGRAMA SOCIAL?", font, colorInstitucional));
 
@@ -271,7 +259,6 @@ namespace presupuestoBasadoAPI.Controllers
             marcoPrograma.SetBorder(new SolidBorder(ColorConstants.BLACK, 1));
             marcoPrograma.AddCell(CeldaTexto("Marque según corresponda (Sí / No):", font, true));
 
-            // === Recuadros numerados del 1 al 4 ===
             var tablaRecuadros = new Table(UnitValue.CreatePercentArray(new float[] { 25, 25, 25, 25 }))
                 .UseAllAvailableWidth();
 
@@ -314,7 +301,6 @@ namespace presupuestoBasadoAPI.Controllers
             marcoPrograma.AddCell(new Cell().Add(tablaRecuadros).SetBorder(Border.NO_BORDER));
             doc.Add(marcoPrograma);
 
-            // === 6.1 Vinculación a derechos sociales ===
             doc.Add(SeccionTitulo("6.1 Vinculación a los derechos sociales y dimensión de bienestar económico", font, colorInstitucional));
 
             if (programaSocial?.Categorias != null && programaSocial.Categorias.Count > 0)
@@ -336,7 +322,6 @@ namespace presupuestoBasadoAPI.Controllers
                 doc.Add(CeldaTexto("Sin vinculación registrada.", font));
             }
 
-            // === SECCIÓN 7 ===
             doc.Add(SeccionTitulo("7.- PADRÓN DE BENEFICIARIOS", font, colorInstitucional));
 
             var marcoPadron = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
@@ -354,7 +339,6 @@ namespace presupuestoBasadoAPI.Controllers
             }
             doc.Add(marcoPadron);
 
-            // === SECCIÓN 8 ===
             doc.Add(SeccionTitulo("8.- REGLAS DE OPERACIÓN", font, colorInstitucional));
 
             var marcoReglas = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
@@ -375,14 +359,11 @@ namespace presupuestoBasadoAPI.Controllers
             doc.Add(marcoReglas);
 
 
-            // === CERRAR ===
             doc.Close();
             var usuarioNombre = usuario?.UserName ?? usuario?.NombreCompleto ?? "usuario";
             var fileName = $"FichaBasicaCompleta_{usuarioNombre}_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
             return File(ms.ToArray(), "application/pdf", fileName);
         }
-
-        // ---------- Helpers ----------
 
         private Paragraph SeccionTitulo(string texto, PdfFont font, DeviceRgb color)
         {

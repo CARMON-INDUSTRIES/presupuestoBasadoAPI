@@ -24,7 +24,6 @@ namespace presupuestoBasadoAPI.Controllers
             _cloudinaryService = cloudinaryService;
         }
 
-        // ✅ Obtener el ID real del usuario autenticado desde las claims del token JWT
         private string GetUserId() =>
             User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
@@ -34,14 +33,12 @@ namespace presupuestoBasadoAPI.Controllers
             if (dto == null)
                 return BadRequest(new { message = "El objeto dto es requerido" });
 
-            // 🔹 Subir archivo a Cloudinary si existe
             if (dto.Archivo != null)
             {
                 var url = await _cloudinaryService.SubirArchivoAsync(dto.Archivo);
                 dto.ArchivoAdjunto = url;
             }
 
-            // 🔹 Asociar el registro con el ID del usuario autenticado
             dto.UserId = GetUserId();
 
             var creado = await _service.CrearAsync(dto);
@@ -53,7 +50,6 @@ namespace presupuestoBasadoAPI.Controllers
         {
             var userId = GetUserId();
 
-            // 🔹 Filtrar por el usuario autenticado
             var ultimo = await _service.ObtenerUltimoAsync(userId);
 
             if (ultimo == null)

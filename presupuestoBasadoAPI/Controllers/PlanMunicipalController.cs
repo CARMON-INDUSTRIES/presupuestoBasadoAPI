@@ -54,7 +54,6 @@ namespace presupuestoBasadoAPI.Controllers
             if (entidadId == null)
                 return Unauthorized(new { message = "Usuario no tiene entidad asignada" });
 
-            // Verificar que el acuerdo pertenece a la entidad del usuario
             var acuerdoPertenece = await _context.AcuerdoMunicipal
                 .AnyAsync(a => a.Id == acuerdoId && a.EntidadId == entidadId.Value);
 

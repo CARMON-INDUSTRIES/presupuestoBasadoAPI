@@ -16,7 +16,6 @@ namespace presupuestoBasadoAPI.Controllers
             _context = context;
         }
 
-        // GET: api/UnidadAdministrativa
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UnidadAdministrativa>>> GetUnidades()
         {

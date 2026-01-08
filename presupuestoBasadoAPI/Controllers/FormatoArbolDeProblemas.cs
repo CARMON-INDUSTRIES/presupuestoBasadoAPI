@@ -37,7 +37,7 @@ namespace presupuestoBasadoAPI.Controllers
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
 
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png"; 
 
             if (usuario?.Entidad != null && !string.IsNullOrEmpty(usuario.Entidad.Nombre))
             {

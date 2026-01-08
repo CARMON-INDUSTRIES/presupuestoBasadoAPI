@@ -16,7 +16,6 @@ namespace presupuestoBasadoAPI.Controllers
             _service = service;
         }
 
-        // POST
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] ProgramaSocialDto dto)
         {
@@ -25,7 +24,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(creado);
         }
 
-        // GET ULTIMO
         [HttpGet("ultimo")]
         public async Task<IActionResult> ObtenerUltimo()
         {

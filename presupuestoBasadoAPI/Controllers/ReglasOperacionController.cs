@@ -25,7 +25,6 @@ namespace presupuestoBasadoAPI.Controllers
             _cloudinaryService = cloudinaryService;
         }
 
-        // ✅ Obtiene el ID real del usuario autenticado
         private string GetUserId() =>
             User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
@@ -35,14 +34,12 @@ namespace presupuestoBasadoAPI.Controllers
             if (dto == null)
                 return BadRequest(new { message = "El objeto dto es requerido" });
 
-            // 🔹 Subir archivo a Cloudinary si existe
             if (dto.Archivo != null)
             {
                 var url = await _cloudinaryService.SubirArchivoAsync(dto.Archivo);
                 dto.ArchivoAdjunto = url;
             }
 
-            // 🔹 Asociar el registro al ID del usuario autenticado
             dto.UserId = GetUserId();
 
             var nuevo = await _service.CrearAsync(dto, GetUserId());
@@ -54,7 +51,6 @@ namespace presupuestoBasadoAPI.Controllers
         {
             var userId = GetUserId();
 
-            // 🔹 Obtener el último registro del usuario autenticado
             var ultimo = await _service.ObtenerUltimoAsync(userId);
 
             if (ultimo == null)

@@ -24,7 +24,7 @@ namespace presupuestoBasadoAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PoblacionObjetivoDto dto)
         {
-            dto.UserId = GetUserId(); // 🔹 asociar al usuario
+            dto.UserId = GetUserId();
             var resultado = await _service.CrearAsync(dto);
             return Ok(resultado);
         }
@@ -33,7 +33,7 @@ namespace presupuestoBasadoAPI.Controllers
         public async Task<ActionResult<IEnumerable<PoblacionObjetivo>>> GetAll()
         {
             var userId = GetUserId();
-            var lista = await _service.ObtenerTodosAsync(userId); // 🔹 filtrar por usuario
+            var lista = await _service.ObtenerTodosAsync(userId);
             return Ok(lista);
         }
 
@@ -50,7 +50,7 @@ namespace presupuestoBasadoAPI.Controllers
         public async Task<ActionResult<PoblacionObjetivo>> ObtenerUltimo()
         {
             var userId = GetUserId();
-            var ultimo = await _service.ObtenerUltimoAsync(userId); // 🔹 filtrar por usuario
+            var ultimo = await _service.ObtenerUltimoAsync(userId);
 
             if (ultimo == null)
                 return NotFound("No se encontró ningún registro para el usuario.");

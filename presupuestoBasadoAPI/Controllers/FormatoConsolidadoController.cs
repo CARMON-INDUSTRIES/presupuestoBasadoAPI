@@ -60,7 +60,6 @@ namespace presupuestoBasadoAPI.Controllers
             {
                 if (controller == null) return;
 
-                // Obtener método GenerarPdf
                 MethodInfo? method = controller.GetType().GetMethod("GenerarPdf");
                 if (method == null) return;
 
@@ -72,7 +71,6 @@ namespace presupuestoBasadoAPI.Controllers
                 merger.Merge(pdfDoc, 1, pdfDoc.GetNumberOfPages());
             }
 
-            // Llamamos a cada controlador
             MergePDFFromController(_formatoAlineacion);
             MergePDFFromController(_formatoFichaBasica);
             MergePDFFromController(_formatoDefinicionProblema);

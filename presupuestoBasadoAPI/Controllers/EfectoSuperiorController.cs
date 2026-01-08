@@ -19,11 +19,9 @@ namespace presupuestoBasadoAPI.Controllers
             _context = context;
         }
 
-        // Método auxiliar para obtener el ID del usuario autenticado
         private string GetUserId() =>
             User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
-        // POST api/EfectoSuperior
         [HttpPost]
         public async Task<IActionResult> Crear([FromBody] EfectoSuperiorDto dto)
         {
@@ -45,7 +43,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(new { message = "Efecto Superior guardado correctamente", nuevo.Id });
         }
 
-        // GET api/EfectoSuperior
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EfectoSuperior>>> GetTodos()
         {
@@ -59,7 +56,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(efectos);
         }
 
-        // GET api/EfectoSuperior/ultimo
         [HttpGet("ultimo")]
         public async Task<ActionResult<EfectoSuperior>> Ultimo()
         {
@@ -76,7 +72,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(ultimo);
         }
 
-        // PUT api/EfectoSuperior/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] EfectoSuperiorDto dto)
         {
@@ -97,7 +92,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(new { message = "Efecto Superior actualizado correctamente" });
         }
 
-        // DELETE api/EfectoSuperior/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Eliminar(int id)
         {

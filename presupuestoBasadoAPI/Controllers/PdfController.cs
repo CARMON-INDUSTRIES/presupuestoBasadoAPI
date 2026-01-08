@@ -37,7 +37,6 @@ namespace presupuestoBasadoAPI.Controllers
             var page = pdfDoc.GetFirstPage();
             var canvas = new iText.Kernel.Pdf.Canvas.PdfCanvas(page);
 
-            // === 1.- ANTECEDENTES === primero es Y luego es X
             canvas.BeginText().SetFontAndSize(font, 10).MoveText(250, 150)
                   .ShowText(user.UnidadAdministrativa?.Clave ?? "").EndText();
 
@@ -45,7 +44,7 @@ namespace presupuestoBasadoAPI.Controllers
                   .ShowText(user.UnidadesPresupuestales ?? "").EndText();
 
             canvas.BeginText().SetFontAndSize(font, 10).MoveText(250, 480)
-                  .ShowText(user.Cargo ?? "").EndText(); // <- o ProgramaSectorial cuando lo tengas
+                  .ShowText(user.Cargo ?? "").EndText(); 
 
             canvas.BeginText().SetFontAndSize(font, 10).MoveText(250, 470)
                   .ShowText(user.ProgramaPresupuestario ?? "").EndText();

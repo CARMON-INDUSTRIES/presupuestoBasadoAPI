@@ -32,15 +32,13 @@ namespace presupuestoBasadoAPI.Controllers
             _imagesPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Images");
         }
 
-        // Obtener UserId del token
         private string GetUserId() =>
             User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
 
-        // Obtener ruta del emblema según la entidad del usuario
         private string GetEmblemaPath(string userId)
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png"; 
 
             if (usuario?.Entidad != null && !string.IsNullOrWhiteSpace(usuario.Entidad.Nombre))
             {
@@ -59,7 +57,6 @@ namespace presupuestoBasadoAPI.Controllers
             var userId = GetUserId();
             var emblemaPath = GetEmblemaPath(userId);
 
-            // === Cargar datos del usuario ===
             var problema = _context.IdentificacionDescripcionProblemas
                 .Where(p => p.UserId == userId)
                 .OrderByDescending(p => p.Id)
@@ -91,7 +88,6 @@ namespace presupuestoBasadoAPI.Controllers
             if (problema == null && objetivo == null && efectoSuperior == null && diseno == null && cobertura == null)
                 return NotFound("No se encontraron datos para generar el formato.");
 
-            // === Crear PDF ===
             using var ms = new MemoryStream();
             var writer = new PdfWriter(ms);
             var pdf = new PdfDocument(writer);
@@ -106,7 +102,6 @@ namespace presupuestoBasadoAPI.Controllers
             float pageWidth = pageSize.GetWidth();
             float pageHeight = pageSize.GetHeight();
 
-            // === Título ===
             var titulo = new Paragraph()
                 .Add(new Text("Anexo 7\n").SetFont(font).SetBold().SetFontSize(14))
                 .Add(new Text("Estructura analítica del Programa Presupuestario")
@@ -114,7 +109,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .SetFixedPosition(36, pageHeight - 60, pageWidth - 72);
             doc.Add(titulo);
 
-            // === Emblema dinámico ===
             if (System.IO.File.Exists(emblemaPath))
             {
                 var emblema = new Image(ImageDataFactory.Create(emblemaPath))
@@ -126,7 +120,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             doc.Add(new Paragraph("\n\n\n\n\n\n"));
 
-            // === Tabla Problemática / Solución ===
             var tablaTopo = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             tablaTopo.SetBorder(new SolidBorder(ColorConstants.BLACK, 0.5f));
 
@@ -153,7 +146,6 @@ namespace presupuestoBasadoAPI.Controllers
             tablaTopo.AddCell(cellDer);
             doc.Add(tablaTopo);
 
-            // === EFECTOS / FINES ===
             doc.Add(new Paragraph("\n"));
             var tablaEF = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             tablaEF.AddHeaderCell(EncabezadoColumna("EFECTOS", font, colorInstitucional));
@@ -189,7 +181,6 @@ namespace presupuestoBasadoAPI.Controllers
             }
             doc.Add(tablaEF);
 
-            // === MAGNITUD ===
             doc.Add(new Paragraph("\n"));
             var tablaMagnitud = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             tablaMagnitud.AddHeaderCell(EncabezadoColumna("MAGNITUD (LÍNEA BASE)", font, colorInstitucional));
@@ -205,7 +196,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             doc.Add(tablaMagnitud);
 
-            // === CAUSAS / MEDIOS ===
             doc.Add(new Paragraph("\n"));
             var tablaCM = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             tablaCM.AddHeaderCell(EncabezadoColumna("CAUSAS", font, colorInstitucional));
@@ -239,14 +229,12 @@ namespace presupuestoBasadoAPI.Controllers
             }
             doc.Add(tablaCM);
 
-            // === Finalizar PDF ===
             doc.Close();
 
             var filename = $"EstructuraAnalitica_{userId}_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
             return File(ms.ToArray(), "application/pdf", filename);
         }
 
-        // === Helper para encabezado de tabla ===
         private Cell EncabezadoColumna(string texto, PdfFont font, DeviceRgb color)
         {
             return new Cell()

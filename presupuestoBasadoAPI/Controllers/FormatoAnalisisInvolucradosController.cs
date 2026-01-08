@@ -52,7 +52,7 @@ namespace presupuestoBasadoAPI.Controllers
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
 
-            string emblemaFileName = "emblema.png"; // por defecto
+            string emblemaFileName = "emblema.png";
 
             if (usuario?.Entidad != null && !string.IsNullOrEmpty(usuario.Entidad.Nombre))
             {
@@ -82,7 +82,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             if (analisis == null || !analisis.Alternativas.Any())
             {
-                Console.WriteLine($"⚠️ [FormatoAnalisisInvolucrados] No se encontraron registros para el usuario: {userId}");
+                Console.WriteLine($" [FormatoAnalisisInvolucrados] No se encontraron registros para el usuario: {userId}");
                 return NotFound("No se encontraron alternativas para el usuario actual.");
             }
 
@@ -97,7 +97,6 @@ namespace presupuestoBasadoAPI.Controllers
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
             var colorVino = new DeviceRgb(102, 0, 0);
 
-            // === ENCABEZADO CON EMBLEMA ===
             var encabezadoTabla = new Table(UnitValue.CreatePercentArray(new float[] { 75, 25 }))
                 .UseAllAvailableWidth()
                 .SetBorder(Border.NO_BORDER);
@@ -137,7 +136,6 @@ namespace presupuestoBasadoAPI.Controllers
             document.Add(encabezadoTabla);
             document.Add(new Paragraph("\n"));
 
-            // === TABLA DE ALTERNATIVAS ===
             float[] columnas = { 120, 70, 70, 70, 70, 70, 70, 70, 70, 60 };
             var tabla = new Table(UnitValue.CreatePointArray(columnas))
                 .SetWidth(UnitValue.CreatePercentValue(100));

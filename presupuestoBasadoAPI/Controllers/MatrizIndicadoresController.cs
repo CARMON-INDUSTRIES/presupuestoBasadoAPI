@@ -113,7 +113,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .OrderByDescending(m => m.Id)
                 .FirstOrDefaultAsync();
 
-            // Crear borrador si no hay ninguno
             if (existente == null)
             {
                 dto.Id = 0;
@@ -130,18 +129,15 @@ namespace presupuestoBasadoAPI.Controllers
                 return Ok(dto);
             }
 
-            // Actualizar campos básicos
             existente.UnidadResponsable = dto.UnidadResponsable;
             existente.UnidadPresupuestal = dto.UnidadPresupuestal;
             existente.ProgramaSectorial = dto.ProgramaSectorial;
             existente.ProgramaPresupuestario = dto.ProgramaPresupuestario;
             existente.ResponsableMIR = dto.ResponsableMIR;
 
-            // ❗ ELIMINAR FILAS ANTERIORES EN BD (la forma correcta)
             _context.FilaMatriz.RemoveRange(existente.Filas);
             await _context.SaveChangesAsync();
 
-            // ❗ AGREGAR NUEVAS FILAS
             existente.Filas = new List<FilaMatriz>();
 
             foreach (var fila in dto.Filas)
@@ -180,7 +176,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .OrderByDescending(m => m.Id)
                 .FirstOrDefaultAsync();
 
-            // --- PRIMER BORRADOR ---
             if (existente == null)
             {
                 dto.Id = 0;
@@ -198,16 +193,14 @@ namespace presupuestoBasadoAPI.Controllers
                 return Ok(new { message = "Autosave creado", id = dto.Id });
             }
 
-            // --- ACTUALIZACIÓN ---
             existente.UnidadResponsable = dto.UnidadResponsable;
             existente.UnidadPresupuestal = dto.UnidadPresupuestal;
             existente.ProgramaSectorial = dto.ProgramaSectorial;
             existente.ProgramaPresupuestario = dto.ProgramaPresupuestario;
             existente.ResponsableMIR = dto.ResponsableMIR;
 
-            // 🔥 limpiar filas pero SIN USAR RemoveRange
             existente.Filas.Clear();
-            await _context.SaveChangesAsync();   // <-- EF ya soltó las referencias
+            await _context.SaveChangesAsync();  
 
             existente.Filas = new List<FilaMatriz>();
 

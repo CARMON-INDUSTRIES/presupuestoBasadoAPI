@@ -98,7 +98,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             if (borrador == null)
             {
-                return Ok(new CoberturaDto()); // siempre devuelve algo
+                return Ok(new CoberturaDto()); 
             }
 
             return Ok(borrador);

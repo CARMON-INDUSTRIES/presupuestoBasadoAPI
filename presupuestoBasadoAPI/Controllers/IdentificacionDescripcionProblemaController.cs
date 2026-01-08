@@ -83,7 +83,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             if (ultimo == null)
             {
-                // crear registro vacío
                 var nuevo = new IdentificacionDescripcionProblemaDto
                 {
                     UserId = userId,

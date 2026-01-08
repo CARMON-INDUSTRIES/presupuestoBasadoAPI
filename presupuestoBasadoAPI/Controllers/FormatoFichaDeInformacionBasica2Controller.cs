@@ -39,7 +39,6 @@ namespace presupuestoBasadoAPI.Controllers
             {
                 var userId = GetUserId();
 
-                // === Recuperar datos ===
                 var detalleReglas = _context.ReglasOperacionDetalles
                     .Where(r => r.UserId == userId)
                     .OrderByDescending(r => r.Id)
@@ -56,7 +55,6 @@ namespace presupuestoBasadoAPI.Controllers
                 if (detalleReglas == null && padron == null && regla == null)
                     return NotFound("No se encontraron datos para generar el PDF.");
 
-                // === Crear documento PDF desde cero ===
                 using var ms = new MemoryStream();
                 using var writer = new PdfWriter(ms);
                 using var pdf = new PdfDocument(writer);
@@ -66,7 +64,6 @@ namespace presupuestoBasadoAPI.Controllers
                 var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
                 var colorInstitucional = new DeviceRgb(105, 27, 49);
 
-                // === SECCIÓN 6: ¿ES UN PROGRAMA SOCIAL? ===
                 doc.Add(SeccionTitulo("6.- ¿ES UN PROGRAMA SOCIAL?", font, colorInstitucional));
 
                 var marcoPrograma = new Table(UnitValue.CreatePercentArray(new float[] { 100 })).UseAllAvailableWidth();
@@ -75,7 +72,6 @@ namespace presupuestoBasadoAPI.Controllers
                 marcoPrograma.AddCell(CeldaTexto(
                     "Marque según corresponda (Sí / No):", font, true));
 
-                // === Recuadros numerados del 1 al 4 ===
                 var tablaRecuadros = new Table(UnitValue.CreatePercentArray(new float[] { 25, 25, 25, 25 }))
                     .UseAllAvailableWidth();
 
@@ -98,7 +94,6 @@ namespace presupuestoBasadoAPI.Controllers
                     var innerTable = new Table(UnitValue.CreatePercentArray(new float[] { 100 }))
                         .UseAllAvailableWidth();
 
-                    // Número del recuadro
                     innerTable.AddCell(new Cell()
                         .Add(new Paragraph($"{i + 1}")
                         .SetFont(font)
@@ -109,7 +104,6 @@ namespace presupuestoBasadoAPI.Controllers
                         .SetPadding(6)
                         .SetTextAlignment(TextAlignment.CENTER));
 
-                    // Respuesta (Sí/No)
                     innerTable.AddCell(new Cell()
                         .Add(new Paragraph(valores[i])
                         .SetFont(font)
@@ -118,7 +112,6 @@ namespace presupuestoBasadoAPI.Controllers
                         .SetBorder(new SolidBorder(ColorConstants.BLACK, 1))
                         .SetPadding(4));
 
-                    // Etiqueta descriptiva
                     innerTable.AddCell(new Cell()
                         .Add(new Paragraph(etiquetas[i])
                         .SetFont(font)
@@ -137,7 +130,6 @@ namespace presupuestoBasadoAPI.Controllers
                 marcoPrograma.AddCell(new Cell().Add(tablaRecuadros).SetBorder(Border.NO_BORDER));
                 doc.Add(marcoPrograma);
 
-                // === 6.1 Vinculación a derechos sociales ===
                 doc.Add(new Paragraph("\n"));
                 doc.Add(SeccionTitulo("6.1 Vinculación a los derechos sociales y dimensión de bienestar económico", font, colorInstitucional));
 
@@ -162,7 +154,6 @@ namespace presupuestoBasadoAPI.Controllers
 
                 doc.Add(tablaDerechos);
 
-                // === SECCIÓN 7: PADRÓN DE BENEFICIARIOS ===
                 doc.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
                 doc.Add(SeccionTitulo("7.- PADRÓN DE BENEFICIARIOS", font, colorInstitucional));
 
@@ -184,7 +175,6 @@ namespace presupuestoBasadoAPI.Controllers
 
                 doc.Add(marcoPadron);
 
-                // === SECCIÓN 8: REGLAS DE OPERACIÓN ===
                 doc.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
                 doc.Add(SeccionTitulo("8.- REGLAS DE OPERACIÓN", font, colorInstitucional));
 
@@ -206,7 +196,6 @@ namespace presupuestoBasadoAPI.Controllers
 
                 doc.Add(marcoReglas);
 
-                // === CERRAR DOCUMENTO ===
                 doc.Close();
 
                 var fileName = $"FichaBasica2_{DateTime.Now:yyyyMMdd_HHmm}.pdf";
@@ -232,7 +221,6 @@ namespace presupuestoBasadoAPI.Controllers
             }
         }
 
-        // ---------- Helpers ----------
         private Paragraph SeccionTitulo(string texto, PdfFont font, DeviceRgb color)
         {
             return new Paragraph(texto)

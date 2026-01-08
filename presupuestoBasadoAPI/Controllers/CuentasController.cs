@@ -67,11 +67,9 @@ public class CuentasController : ControllerBase
     [HttpPost("Registro")]
     public async Task<IActionResult> Registro([FromBody] RegisterDto model)
     {
-        // Validación mínima obligatoria
         if (string.IsNullOrWhiteSpace(model.User) || string.IsNullOrWhiteSpace(model.Password))
             return BadRequest(new { message = "El usuario y la contraseña son obligatorios." });
 
-        // Crear el nuevo usuario (los demás campos son opcionales)
         var usuario = new ApplicationUser
         {
             UserName = model.User,
@@ -86,12 +84,10 @@ public class CuentasController : ControllerBase
             EntidadId = model.EntidadId
         };
 
-        // Crear el usuario en Identity
         var resultado = await _userManager.CreateAsync(usuario, model.Password);
         if (!resultado.Succeeded)
             return BadRequest(resultado.Errors);
 
-        // Asignar rol si se proporcionó
         if (!string.IsNullOrEmpty(model.Rol))
         {
             if (!await _roleManager.RoleExistsAsync(model.Rol))
@@ -100,7 +96,6 @@ public class CuentasController : ControllerBase
             await _userManager.AddToRoleAsync(usuario, model.Rol);
         }
 
-        // Obtener roles y generar token
         var roles = await _userManager.GetRolesAsync(usuario);
         var token = GenerateJwtToken(usuario, roles);
 
@@ -218,7 +213,6 @@ public class CuentasController : ControllerBase
         });
     }
 
-    // MÉTODO PRIVADO PARA GENERAR JWT
     private string GenerateJwtToken(ApplicationUser user, IList<string> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));

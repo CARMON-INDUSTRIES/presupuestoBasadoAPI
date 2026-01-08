@@ -52,7 +52,6 @@ namespace presupuestoBasadoAPI.Controllers
             return Ok(primerFinalidad);
         }
 
-        // Devuelve todas las subfunciones
         [HttpGet("subfunciones")]
         public async Task<ActionResult<IEnumerable<Subfuncion>>> GetAllSubfunciones()
         {
@@ -62,7 +61,6 @@ namespace presupuestoBasadoAPI.Controllers
                 .ToListAsync();
         }
 
-        // Devuelve la función y finalidad asociadas a una subfunción
         [HttpGet("subfuncion/{subfuncionId}/jerarquia")]
         public async Task<ActionResult> GetJerarquiaPorSubfuncion(int subfuncionId)
         {

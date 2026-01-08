@@ -9,7 +9,6 @@ public class ClasificacionController : ControllerBase
     private readonly AppDbContext _context;
     public ClasificacionController(AppDbContext ctx) { _context = ctx; }
 
-    // Finalidad
     [HttpPost("finalidad")]
     public async Task<IActionResult> CrearFinalidad([FromBody] Finalidad f)
     {
@@ -22,7 +21,6 @@ public class ClasificacionController : ControllerBase
     public async Task<IActionResult> GetFinalidades() =>
         Ok(await _context.Finalidad.Select(x => new { x.Id, x.Nombre }).ToListAsync());
 
-    // Función
     [HttpPost("funcion")]
     public async Task<IActionResult> CrearFuncion([FromBody] Funcion fn)
     {
@@ -39,7 +37,6 @@ public class ClasificacionController : ControllerBase
         Ok(await _context.Funcion.Where(f => f.FinalidadId == finalidadId)
                                  .Select(f => new { f.Id, f.Nombre }).ToListAsync());
 
-    // SubFunción
     [HttpPost("subfuncion")]
     public async Task<IActionResult> CrearSubFuncion([FromBody] Subfuncion s)
     {

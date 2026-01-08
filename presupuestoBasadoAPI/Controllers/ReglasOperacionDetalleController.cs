@@ -18,14 +18,13 @@ namespace presupuestoBasadoAPI.Controllers
             _context = context;
         }
 
-        // Obtener el último registro del usuario
         [HttpGet("ultimo")]
         public async Task<ActionResult<ReglasOperacionDetalle>> GetUltimo()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var detalle = await _context.ReglasOperacionDetalles
-                .Where(d => d.UserId == userId) // 🔹 filtramos por usuario
+                .Where(d => d.UserId == userId) 
                 .OrderByDescending(d => d.Id)
                 .FirstOrDefaultAsync();
 
@@ -34,11 +33,10 @@ namespace presupuestoBasadoAPI.Controllers
             return detalle;
         }
 
-        // Crear nuevo
         [HttpPost]
         public async Task<ActionResult<ReglasOperacionDetalle>> Crear(ReglasOperacionDetalle detalle)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); //  asignamos usuario
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); 
             detalle.UserId = userId;
 
             _context.ReglasOperacionDetalles.Add(detalle);
@@ -46,14 +44,13 @@ namespace presupuestoBasadoAPI.Controllers
             return CreatedAtAction(nameof(GetUltimo), new { id = detalle.Id }, detalle);
         }
 
-        // Actualizar existente
         [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, ReglasOperacionDetalle detalle)
         {
             if (id != detalle.Id) return BadRequest();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            detalle.UserId = userId; // 🔹 opcional: mantener usuario actualizado
+            detalle.UserId = userId; 
 
             _context.Entry(detalle).State = EntityState.Modified;
             await _context.SaveChangesAsync();
