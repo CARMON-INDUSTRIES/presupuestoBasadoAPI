@@ -38,7 +38,7 @@ namespace presupuestoBasadoAPI.Controllers
         private string GetEmblemaPath(string userId)
         {
             var usuario = _context.Users.Include(u => u.Entidad).FirstOrDefault(u => u.Id == userId);
-            string emblemaFileName = "emblema.png"; 
+            string emblemaFileName = "emblema.png"; // por defecto
 
             if (usuario?.Entidad != null && !string.IsNullOrWhiteSpace(usuario.Entidad.Nombre))
             {
@@ -60,15 +60,14 @@ namespace presupuestoBasadoAPI.Controllers
             var usuario = await _context.Users
                 .Where(u => u.Id == userId)
                 .Select(u => new {
-                u.NombreCompleto,
-                u.Cargo,
-                u.Coordinador,
-                u.UnidadesPresupuestales,
-                u.ProgramaPresupuestario,
-                u.NombreMatriz
-        })
-            .FirstOrDefaultAsync();
-
+                    u.NombreCompleto,
+                    u.Cargo,
+                    u.Coordinador,
+                    u.UnidadesPresupuestales,
+                    u.ProgramaPresupuestario,
+                    u.NombreMatriz
+                })
+                .FirstOrDefaultAsync();
 
             var ficha = await _context.Fichas
                 .Include(f => f.Indicadores)
@@ -78,21 +77,19 @@ namespace presupuestoBasadoAPI.Controllers
                 .FirstOrDefaultAsync();
 
             if (ficha == null)
-                return NotFound("No se encontró ninguna ficha registrada para este usuario.");
+                return NotFound("No se encontró ninguna ficha registrada.");
 
             var indicadores = indicadorId.HasValue
                 ? ficha.Indicadores.Where(i => i.Id == indicadorId.Value).ToList()
                 : ficha.Indicadores.ToList();
 
             if (!indicadores.Any())
-                return NotFound("No se encontró el indicador solicitado para esta ficha.");
+                return NotFound("No hay indicadores.");
 
             using var ms = new MemoryStream();
             var writer = new PdfWriter(ms);
             var pdf = new PdfDocument(writer);
-            var document = new Document(pdf);
-            var pageSize = PageSize.LETTER;
-            var doc = new Document(pdf, pageSize);
+            var document = new Document(pdf, PageSize.LETTER);
 
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
             var fontBold = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
@@ -102,107 +99,115 @@ namespace presupuestoBasadoAPI.Controllers
             float pageWidth = pdf.GetDefaultPageSize().GetWidth();
             float pageHeight = pdf.GetDefaultPageSize().GetHeight();
 
-            if (System.IO.File.Exists(emblemaPath))
+            int contador = 0;
+
+            foreach (var indicador in indicadores)
             {
-                var emblema = new Image(ImageDataFactory.Create(emblemaPath))
-                    .SetWidth(85)
-                    .SetAutoScale(true)
-                    .SetFixedPosition(pageWidth - 100 - 85, pageHeight - 95);
-                doc.Add(emblema);
-            }
+                // 👉 Evitar página en blanco al inicio
+                if (contador > 0)
+                {
+                    document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+                }
 
-            document.Add(new Paragraph("Ficha Técnica del Indicador")
-                .SetFont(fontBold)
-                .SetFontSize(14)
-                .SetTextAlignment(TextAlignment.LEFT)
-                .SetMarginBottom(29));
+                contador++;
 
-            document.Add(SeccionTitulo("I. DATOS DE IDENTIFICACIÓN DEL PROGRAMA", colorRojo));
+                // === Emblema ===
+                if (System.IO.File.Exists(emblemaPath))
+                {
+                    var emblema = new Image(ImageDataFactory.Create(emblemaPath))
+                        .SetWidth(85)
+                        .SetFixedPosition(pageWidth - 185, pageHeight - 95);
 
-            var tProg = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
-            tProg.AddCell(Celda("Nombre completo:", true, colorGris));
-            tProg.AddCell(Celda(usuario.NombreCompleto));
-            tProg.AddCell(Celda("Cargo:", true, colorGris));
-            tProg.AddCell(Celda(usuario.Cargo));
-            tProg.AddCell(Celda("Coordinador:", true, colorGris));
-            tProg.AddCell(Celda(usuario.Coordinador));
-            tProg.AddCell(Celda("Unidad presupuestal:", true, colorGris));
-            tProg.AddCell(Celda(usuario.UnidadesPresupuestales));
-            tProg.AddCell(Celda("Programa presupuestario:", true, colorGris));
-            tProg.AddCell(Celda(usuario.ProgramaPresupuestario));
-            tProg.AddCell(Celda("Nombre de la matriz:", true, colorGris));
-            tProg.AddCell(Celda(usuario.NombreMatriz));
-            document.Add(tProg);
+                    document.Add(emblema);
+                }
 
+                // === TÍTULO ===
+                document.Add(new Paragraph("Ficha Técnica del Indicador")
+                    .SetFont(fontBold)
+                    .SetFontSize(14)
+                    .SetMarginBottom(20));
 
-            var indicador = indicadores.First();
-            document.Add(SeccionTitulo("II. DATOS DE IDENTIFICACIÓN DEL INDICADOR", colorRojo));
+                // === I. PROGRAMA ===
+                document.Add(SeccionTitulo("I. DATOS DE IDENTIFICACIÓN DEL PROGRAMA", colorRojo));
 
-            var tIdent = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
-            tIdent.AddCell(Celda("Nivel:", true, colorGris));
-            tIdent.AddCell(Celda(indicador.Nivel));
-            tIdent.AddCell(Celda("Dimensión a medir:", true, colorGris));
-            tIdent.AddCell(Celda(indicador.Dimension));
-            tIdent.AddCell(Celda("Sentido:", true, colorGris));
-            tIdent.AddCell(Celda(indicador.Sentido));
-            tIdent.AddCell(Celda("Definición:", true, colorGris));
-            tIdent.AddCell(Celda(indicador.Definicion));
-            document.Add(tIdent);
+                var tProg = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
+                tProg.AddCell(Celda("Nombre completo:", true, colorGris));
+                tProg.AddCell(Celda(usuario?.NombreCompleto));
+                tProg.AddCell(Celda("Cargo:", true, colorGris));
+                tProg.AddCell(Celda(usuario?.Cargo));
+                tProg.AddCell(Celda("Coordinador:", true, colorGris));
+                tProg.AddCell(Celda(usuario?.Coordinador));
+                tProg.AddCell(Celda("Unidad presupuestal:", true, colorGris));
+                tProg.AddCell(Celda(usuario?.UnidadesPresupuestales));
+                tProg.AddCell(Celda("Programa presupuestario:", true, colorGris));
+                tProg.AddCell(Celda(usuario?.ProgramaPresupuestario));
+                tProg.AddCell(Celda("Nombre de la matriz:", true, colorGris));
+                tProg.AddCell(Celda(usuario?.NombreMatriz));
+                document.Add(tProg);
 
-            document.Add(SeccionTitulo("III. DATOS DEL INDICADOR", colorRojo));
+                // === II. IDENTIFICACIÓN INDICADOR ===
+                document.Add(SeccionTitulo("II. DATOS DE IDENTIFICACIÓN DEL INDICADOR", colorRojo));
 
-            var tDatos = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
-            tDatos.AddCell(Celda("Fórmula del indicador:", true, colorGris));
-            tDatos.AddCell(new Cell(1, 3)
-                .Add(new Paragraph($"{indicador.Numerador} / {indicador.Denominador}").SetFontSize(9))
-                .SetBorder(new iText.Layout.Borders.SolidBorder(ColorConstants.BLACK, 0.5f)));
+                var tIdent = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
+                tIdent.AddCell(Celda("Nivel:", true, colorGris));
+                tIdent.AddCell(Celda(indicador.Nivel));
+                tIdent.AddCell(Celda("Dimensión:", true, colorGris));
+                tIdent.AddCell(Celda(indicador.Dimension));
+                tIdent.AddCell(Celda("Sentido:", true, colorGris));
+                tIdent.AddCell(Celda(indicador.Sentido));
+                tIdent.AddCell(Celda("Definición:", true, colorGris));
+                tIdent.AddCell(Celda(indicador.Definicion));
+                document.Add(tIdent);
 
-            tDatos.AddCell(Celda("Unidad de medida:", true, colorGris));
-            tDatos.AddCell(Celda(indicador.UnidadMedida));
-            tDatos.AddCell(Celda("Rango de valor:", true, colorGris));
-            tDatos.AddCell(Celda(indicador.RangoValor));
-            tDatos.AddCell(Celda("Frecuencia de medición:", true, colorGris));
-            tDatos.AddCell(Celda(indicador.FrecuenciaMedicion));
-            tDatos.AddCell(Celda("Cobertura:", true, colorGris));
-            tDatos.AddCell(Celda(indicador.Cobertura));
-            tDatos.AddCell(Celda("Fuentes:", true, colorGris));
-            tDatos.AddCell(new Cell(1, 3)
-                .Add(new Paragraph(
-                    $"Resultado: {indicador.FuenteResultado}\n" +
-                    $"Numerador: {indicador.FuenteNumerador}\n" +
-                    $"Denominador: {indicador.FuenteDenominador}")
-                    .SetFontSize(9))
-                .SetBorder(new iText.Layout.Borders.SolidBorder(ColorConstants.BLACK, 0.5f)));
-            document.Add(tDatos);
+                // === III. DATOS INDICADOR ===
+                document.Add(SeccionTitulo("III. DATOS DEL INDICADOR", colorRojo));
 
-            document.Add(SeccionTitulo("Línea Base", colorRojo));
+                var tDatos = new Table(UnitValue.CreatePercentArray(new float[] { 2, 3, 2, 3 })).UseAllAvailableWidth();
 
-            var tLinea = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 2, 2 })).UseAllAvailableWidth();
-            tLinea.AddCell(Celda("Valor:", true, colorGris));
-            tLinea.AddCell(Celda(indicador.LineaBaseValor?.ToString() ?? ""));
-            tLinea.AddCell(Celda("Año:", true, colorGris));
-            tLinea.AddCell(Celda(indicador.LineaBaseAnio));
-            tLinea.AddCell(Celda("Unidad:", true, colorGris));
-            tLinea.AddCell(Celda(indicador.LineaBaseUnidad));
-            tLinea.AddCell(Celda("Periodo:", true, colorGris));
-            tLinea.AddCell(Celda(indicador.LineaBasePeriodo));
-            document.Add(tLinea);
+                tDatos.AddCell(Celda("Fórmula:", true, colorGris));
+                tDatos.AddCell(new Cell(1, 3)
+                    .Add(new Paragraph($"{indicador.Numerador} / {indicador.Denominador}").SetFontSize(9)));
 
-            document.Add(SeccionTitulo("Determinación de Metas", colorRojo));
+                tDatos.AddCell(Celda("Unidad:", true, colorGris));
+                tDatos.AddCell(Celda(indicador.UnidadMedida));
+                tDatos.AddCell(Celda("Rango:", true, colorGris));
+                tDatos.AddCell(Celda(indicador.RangoValor));
+                tDatos.AddCell(Celda("Frecuencia:", true, colorGris));
+                tDatos.AddCell(Celda(indicador.FrecuenciaMedicion));
+                tDatos.AddCell(Celda("Cobertura:", true, colorGris));
+                tDatos.AddCell(Celda(indicador.Cobertura));
 
-            var metas = ficha.MetasProgramadas
-                .Where(m => m.FichaIndicadorId == ficha.Id)
-                .ToList();
+                document.Add(tDatos);
 
-            var tMetas = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 2, 2, 2 })).UseAllAvailableWidth();
-            tMetas.AddHeaderCell(Celda("Meta Programada", true, colorGris));
-            tMetas.AddHeaderCell(Celda("Periodo", true, colorGris));
-            tMetas.AddHeaderCell(Celda("Mes", true, colorGris));
-            tMetas.AddHeaderCell(Celda("Esperado", true, colorGris));
-            tMetas.AddHeaderCell(Celda("Alcanzado", true, colorGris));
+                // === LÍNEA BASE ===
+                document.Add(SeccionTitulo("Línea Base", colorRojo));
 
-            if (metas.Any())
-            {
+                var tLinea = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 2, 2 })).UseAllAvailableWidth();
+                tLinea.AddCell(Celda("Valor:", true, colorGris));
+                tLinea.AddCell(Celda(indicador.LineaBaseValor?.ToString()));
+                tLinea.AddCell(Celda("Año:", true, colorGris));
+                tLinea.AddCell(Celda(indicador.LineaBaseAnio));
+                tLinea.AddCell(Celda("Unidad:", true, colorGris));
+                tLinea.AddCell(Celda(indicador.LineaBaseUnidad));
+                tLinea.AddCell(Celda("Periodo:", true, colorGris));
+                tLinea.AddCell(Celda(indicador.LineaBasePeriodo));
+                document.Add(tLinea);
+
+                // === METAS ===
+                document.Add(SeccionTitulo("Determinación de Metas", colorRojo));
+
+                var metas = ficha.MetasProgramadas
+                    .Where(m => m.FichaIndicadorId == ficha.Id)
+                    .ToList();
+
+                var tMetas = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 2, 2, 2 })).UseAllAvailableWidth();
+
+                tMetas.AddHeaderCell(Celda("Meta", true, colorGris));
+                tMetas.AddHeaderCell(Celda("Periodo", true, colorGris));
+                tMetas.AddHeaderCell(Celda("Mes", true, colorGris));
+                tMetas.AddHeaderCell(Celda("Esperado", true, colorGris));
+                tMetas.AddHeaderCell(Celda("Alcanzado", true, colorGris));
+
                 foreach (var m in metas)
                 {
                     tMetas.AddCell(Celda(m.MetaProgramadaNombre));
@@ -211,59 +216,16 @@ namespace presupuestoBasadoAPI.Controllers
                     tMetas.AddCell(Celda(m.CantidadEsperada.ToString("N2")));
                     tMetas.AddCell(Celda(m.Alcanzado.ToString("N2")));
                 }
+
+                document.Add(tMetas);
             }
-            else
-            {
-                tMetas.AddCell(new Cell(1, 5)
-                    .Add(new Paragraph("No hay metas registradas"))
-                    .SetTextAlignment(TextAlignment.CENTER)
-                    .SetFontSize(9));
-            }
-            document.Add(tMetas);
-
-            //document.Add(SeccionTitulo("IV. CREMA", colorRojo));
-
-            //var cremaTexto = indicador.Crema != null
-            //    ? string.Join(", ", indicador.Crema.Select(c => $"{c.Key}: {c.Value}"))
-            //    : "N/A";
-
-            //document.Add(new Paragraph($"Crema: {cremaTexto}"));
-
-            document.Add(SeccionTitulo("V. LÍNEA DE ACCIÓN", colorRojo));
-
-            var ultimaMunicipal = await _context.AlineacionesMunicipio
-                .Where(a => a.UserId == userId)
-                .OrderByDescending(a => a.Id)
-                .FirstOrDefaultAsync();
-
-            var ultimaEstatal = await _context.AlineacionesEstado
-                .Where(a => a.UserId == userId)
-                .OrderByDescending(a => a.Id)
-                .FirstOrDefaultAsync();
-
-            var lineaSeleccionada = ultimaEstatal?.LineaAccion ?? ultimaMunicipal?.LineaAccion;
-
-
-            if (!string.IsNullOrWhiteSpace(lineaSeleccionada))
-            {
-                var tLa = new Table(UnitValue.CreatePercentArray(new float[] { 1 })).UseAllAvailableWidth();
-                tLa.AddCell(new Cell()
-                    .Add(new Paragraph(lineaSeleccionada).SetFontSize(9))
-                    .SetBorder(new iText.Layout.Borders.SolidBorder(ColorConstants.BLACK, 0.5f))
-                    .SetPadding(4));
-                document.Add(tLa);
-            }
-            else
-            {
-                document.Add(new Paragraph("No hay línea de acción registrada para este usuario.")
-                    .SetFontSize(9));
-            }
-
 
             document.Close();
-            return File(ms.ToArray(), "application/pdf", $"FichaIndicador_{ficha.Id}_{indicador.Id}.pdf");
+
+            return File(ms.ToArray(), "application/pdf", $"Fichas_{ficha.Id}.pdf");
         }
 
+        // === Helpers ===
         private static Paragraph SeccionTitulo(string texto, Color colorFondo)
         {
             return new Paragraph(texto)
