@@ -61,5 +61,34 @@ namespace presupuestoBasadoAPI.Services
             dto.Id = entity.Id;
             return dto;
         }
+
+        public async Task<bool> UpdateAsync(int id, ArbolObjetivosDto dto, string userId)
+        {
+            var entity = await _context.ArbolObjetivos
+                .Include(a => a.Componentes)
+                .FirstOrDefaultAsync(a => a.Id == id && a.UserId == userId);
+
+            if (entity == null)
+                return false;
+
+            entity.Fin = dto.Fin;
+            entity.ObjetivoCentral = dto.ObjetivoCentral;
+
+
+
+            _context.ComponentesObjetivo.RemoveRange(entity.Componentes);
+
+            entity.Componentes = dto.Componentes.Select(c => new ComponenteObjetivo
+            {
+                Nombre = c.Nombre,
+                Medios = c.Medios ?? new List<string>(),
+                Resultados = c.Resultados ?? new List<string>(),
+                UserId = userId
+            }).ToList();
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

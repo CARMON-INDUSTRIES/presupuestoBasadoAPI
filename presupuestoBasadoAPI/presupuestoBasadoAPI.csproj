@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <Content Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Cloudinary" Version="0.0.5" />
     <PackageReference Include="CloudinaryDotNet" Version="1.27.7" />
     <PackageReference Include="FluentFTP" Version="53.0.2" />
@@ -79,10 +86,6 @@
     <None Update="PDFReports\FormatoMatriz.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>
