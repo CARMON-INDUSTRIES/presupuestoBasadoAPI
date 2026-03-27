@@ -76,7 +76,7 @@ namespace presupuestoBasadoAPI.Services
 
 
 
-            _context.ComponentesObjetivo.RemoveRange(entity.Componentes);
+            _context.ComponenteObjetivo.RemoveRange(entity.Componentes);
 
             entity.Componentes = dto.Componentes.Select(c => new ComponenteObjetivo
             {

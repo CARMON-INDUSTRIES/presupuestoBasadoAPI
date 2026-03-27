@@ -30,7 +30,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             var lista = await _context.Fichas
                 .Include(f => f.Indicadores)
-                .Include(f => f.MetasProgramadas)
+                .ThenInclude(i => i.MetasProgramadas)
                 .Include(f => f.LineasAccion)
                 .Where(f => f.UserId == userId)
                 .ToListAsync();
@@ -45,7 +45,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             var ficha = await _context.Fichas
                 .Include(f => f.Indicadores)
-                .Include(f => f.MetasProgramadas)
+                .ThenInclude(i => i.MetasProgramadas)
                 .Include(f => f.LineasAccion)
                 .FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
 
@@ -65,10 +65,7 @@ namespace presupuestoBasadoAPI.Controllers
                 UserId = userId,
                 ClaveIndicador = model.ClaveIndicador,
                 TipoIndicador = model.TipoIndicador,
-                ProgramaPresupuestario = "",
-                UnidadPresupuestal = "",
-                UnidadResponsable = "",
-                ResponsableMIR = "",
+
                 Indicadores = model.Indicadores.Select(i => new IndicadorDetalle
                 {
                     Nivel = i.Nivel,
@@ -90,17 +87,23 @@ namespace presupuestoBasadoAPI.Controllers
                     LineaBaseUnidad = i.LineaBaseUnidad,
                     LineaBaseAnio = i.LineaBaseAnio,
                     LineaBasePeriodo = i.LineaBasePeriodo,
-                    Crema = i.Crema
+                    Crema = i.Crema,
+
+                    MetasProgramadas = (i.MetasProgramadas ?? new List<MetaProgramadaDto>())
+                        .Select(m => new MetaProgramada
+                        {
+                            MetaProgramadaNombre = m.MetaProgramadaNombre,
+                            Cantidad = m.Cantidad,
+                            PeriodoCumplimiento = m.PeriodoCumplimiento,
+                            Mes = m.Mes,
+                            CantidadEsperada = m.CantidadEsperada,
+                            Alcanzado = m.Alcanzado
+                        }).ToList()
                 }).ToList(),
-                MetasProgramadas = model.MetasProgramadas.Select(m => new MetaProgramada
-                {
-                    MetaProgramadaNombre = m.MetaProgramadaNombre,
-                    Cantidad = m.Cantidad,
-                    PeriodoCumplimiento = m.PeriodoCumplimiento,
-                    Mes = m.Mes,
-                    CantidadEsperada = m.CantidadEsperada,
-                    Alcanzado = m.Alcanzado
-                }).ToList(),
+
+                // ❌ ELIMINADO COMPLETAMENTE
+                // MetasProgramadas = ...
+
                 LineasAccion = model.LineasAccion.Select(l => new LineaAccion
                 {
                     Acuerdo = l.Acuerdo,
@@ -112,11 +115,23 @@ namespace presupuestoBasadoAPI.Controllers
             };
 
             _context.Fichas.Add(ficha);
+
+            // 🔥 RELACIONES CORRECTAS
+            foreach (var ind in ficha.Indicadores)
+            {
+                ind.FichaIndicador = ficha;
+
+                foreach (var meta in ind.MetasProgramadas ?? [])
+                {
+                    meta.IndicadorDetalle = ind;
+                    meta.FichaIndicador = ficha; // 🔥 CLAVE
+                }
+            }
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetById), new { id = ficha.Id }, ficha);
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] FichaIndicador fichaActualizada)
@@ -125,7 +140,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             var fichaExistente = await _context.Fichas
                 .Include(f => f.Indicadores)
-                .Include(f => f.MetasProgramadas)
+                .ThenInclude(i => i.MetasProgramadas)
                 .Include(f => f.LineasAccion)
                 .FirstOrDefaultAsync(f => f.Id == id && f.UserId == userId);
 
@@ -134,24 +149,29 @@ namespace presupuestoBasadoAPI.Controllers
 
             fichaExistente.ClaveIndicador = fichaActualizada.ClaveIndicador;
             fichaExistente.TipoIndicador = fichaActualizada.TipoIndicador;
-            fichaExistente.UnidadResponsable = fichaActualizada.UnidadResponsable;
-            fichaExistente.UnidadPresupuestal = fichaActualizada.UnidadPresupuestal;
-            fichaExistente.ProgramaPresupuestario = fichaActualizada.ProgramaPresupuestario;
-            fichaExistente.ResponsableMIR = fichaActualizada.ResponsableMIR;
 
-            _context.Set<IndicadorDetalle>().RemoveRange(fichaExistente.Indicadores ?? []);
-            _context.Set<MetaProgramada>().RemoveRange(fichaExistente.MetasProgramadas ?? []);
-            _context.Set<LineaAccion>().RemoveRange(fichaExistente.LineasAccion ?? []);
+            // 🔥 limpiar todo correctamente
+            _context.Set<MetaProgramada>().RemoveRange(
+                fichaExistente.Indicadores.SelectMany(i => i.MetasProgramadas)
+            );
 
+            _context.Set<IndicadorDetalle>().RemoveRange(fichaExistente.Indicadores);
+            _context.Set<LineaAccion>().RemoveRange(fichaExistente.LineasAccion);
+
+            // 🔥 recrear indicadores con metas
             fichaExistente.Indicadores = fichaActualizada.Indicadores ?? [];
-            fichaExistente.MetasProgramadas = fichaActualizada.MetasProgramadas ?? [];
-            fichaExistente.LineasAccion = fichaActualizada.LineasAccion ?? [];
 
             foreach (var ind in fichaExistente.Indicadores)
+            {
                 ind.FichaIndicador = fichaExistente;
 
-            foreach (var meta in fichaExistente.MetasProgramadas)
-                meta.FichaIndicador = fichaExistente;
+                foreach (var meta in ind.MetasProgramadas ?? [])
+                {
+                    meta.IndicadorDetalle = ind;
+                }
+            }
+
+            fichaExistente.LineasAccion = fichaActualizada.LineasAccion ?? [];
 
             foreach (var linea in fichaExistente.LineasAccion)
                 linea.FichaIndicador = fichaExistente;

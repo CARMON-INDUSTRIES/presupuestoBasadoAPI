@@ -6,6 +6,9 @@ public class MetaProgramada
     [Key]
     public int Id { get; set; }
 
+    public int IndicadorDetalleId { get; set; } 
+    public IndicadorDetalle IndicadorDetalle { get; set; }
+
     public int FichaIndicadorId { get; set; }
     public FichaIndicador FichaIndicador { get; set; } = null!;
 

@@ -55,7 +55,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Finalidad> Finalidad { get; set; }
     public DbSet<Funcion> Funcion { get; set; }
     public DbSet<Subfuncion> SubFuncion { get; set; }
-    public DbSet<ComponenteObjetivo> ComponentesObjetivo { get; set; }
+    public DbSet<ComponenteObjetivo> ComponenteObjetivo { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

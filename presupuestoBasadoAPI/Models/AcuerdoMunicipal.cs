@@ -10,7 +10,7 @@
         public virtual ICollection<ObjetivoMunicipal> Objetivos { get; set; } = new List<ObjetivoMunicipal>();
 
         public int EntidadId { get; set; }
-
+        public Entidad Entidad { get; set; } = null!;
 
     }
 }

@@ -33,6 +33,8 @@ public class IndicadorDetalle
     public string LineaBaseAnio { get; set; } = string.Empty;
     public string LineaBasePeriodo { get; set; } = string.Empty;
 
+    public ICollection<MetaProgramada> MetasProgramadas { get; set; } = new List<MetaProgramada>();
+
     [NotMapped]
     public Dictionary<string, string> Crema { get; set; } = new();
 }

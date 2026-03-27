@@ -71,7 +71,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             var ficha = await _context.Fichas
                 .Include(f => f.Indicadores)
-                .Include(f => f.MetasProgramadas)
+                .ThenInclude(i => i.MetasProgramadas)
                 .Where(f => f.UserId == userId)
                 .OrderByDescending(f => f.Id)
                 .FirstOrDefaultAsync();
@@ -196,9 +196,7 @@ namespace presupuestoBasadoAPI.Controllers
                 // === METAS ===
                 document.Add(SeccionTitulo("Determinación de Metas", colorRojo));
 
-                var metas = ficha.MetasProgramadas
-                    .Where(m => m.FichaIndicadorId == ficha.Id)
-                    .ToList();
+                var metas = indicador.MetasProgramadas?.ToList() ?? new List<MetaProgramada>();
 
                 var tMetas = new Table(UnitValue.CreatePercentArray(new float[] { 2, 2, 2, 2, 2 })).UseAllAvailableWidth();
 

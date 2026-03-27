@@ -22,5 +22,8 @@
         public string LineaBaseAnio { get; set; } = string.Empty;
         public string LineaBasePeriodo { get; set; } = string.Empty;
         public Dictionary<string, string> Crema { get; set; } = new();
+
+        public List<MetaProgramadaDto> MetasProgramadas { get; set; } = new();
+
     }
 }
