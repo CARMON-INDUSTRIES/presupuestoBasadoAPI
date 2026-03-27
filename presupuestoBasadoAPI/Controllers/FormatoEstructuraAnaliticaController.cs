@@ -200,14 +200,14 @@ namespace presupuestoBasadoAPI.Controllers
             var tablaCM = new Table(UnitValue.CreatePercentArray(new float[] { 50, 50 })).UseAllAvailableWidth();
             tablaCM.AddHeaderCell(EncabezadoColumna("CAUSAS", font, colorInstitucional));
             tablaCM.AddHeaderCell(EncabezadoColumna("MEDIOS", font, colorInstitucional));
-
+            //debe pintar los datos de el arbol de objetivos, corregir YA
             var causas = new[] {
                 problema?.CausaBeneficiados ?? "",
                 problema?.CausaOpositores ?? "",
                 problema?.CausaEjecutores ?? "",
                 problema?.CausaIndiferentes ?? ""
             };
-
+            
             var medios = new System.Collections.Generic.List<string>();
             if (objetivo?.Componentes != null)
                 foreach (var comp in objetivo.Componentes)
