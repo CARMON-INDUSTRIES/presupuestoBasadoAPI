@@ -30,17 +30,29 @@ namespace presupuestoBasadoAPI.Controllers
 
             var userId = GetUserId();
 
-            var nuevo = new EfectoSuperior
-            {
-                Descripcion = dto.Descripcion,
-                FechaRegistro = DateTime.UtcNow,
-                UserId = userId
-            };
+            var existente = await _context.EfectosSuperiores
+                .FirstOrDefaultAsync(e => e.UserId == userId);
 
-            _context.EfectosSuperiores.Add(nuevo);
+            if (existente != null)
+            {
+                existente.Descripcion = dto.Descripcion;
+                existente.FechaRegistro = DateTime.UtcNow;
+            }
+            else
+            {
+                var nuevo = new EfectoSuperior
+                {
+                    Descripcion = dto.Descripcion,
+                    FechaRegistro = DateTime.UtcNow,
+                    UserId = userId
+                };
+
+                _context.EfectosSuperiores.Add(nuevo);
+            }
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Efecto Superior guardado correctamente", nuevo.Id });
+            return Ok(new { message = "Efecto Superior guardado correctamente" });
         }
 
         [HttpGet]
@@ -63,8 +75,7 @@ namespace presupuestoBasadoAPI.Controllers
 
             var ultimo = await _context.EfectosSuperiores
                 .Where(e => e.UserId == userId)
-                .OrderByDescending(e => e.FechaRegistro)
-                .FirstOrDefaultAsync();
+                .OrderByDescending(e => e.Id).FirstOrDefaultAsync();
 
             if (ultimo == null)
                 return NotFound(new { message = "No hay registros de efecto superior para este usuario." });

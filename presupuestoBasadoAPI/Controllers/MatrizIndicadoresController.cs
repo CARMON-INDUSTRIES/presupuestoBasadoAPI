@@ -160,8 +160,6 @@ namespace presupuestoBasadoAPI.Controllers
         }
 
 
-
-
         [HttpPut("autosave")]
         public async Task<IActionResult> AutoSave([FromBody] MatrizIndicadores dto)
         {
@@ -222,8 +220,5 @@ namespace presupuestoBasadoAPI.Controllers
 
             return Ok(new { message = "Autosave actualizado", id = existente.Id });
         }
-
-
-
     }
 }

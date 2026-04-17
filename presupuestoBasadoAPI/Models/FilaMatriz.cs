@@ -10,6 +10,9 @@
         public string Supuestos { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
 
+
+        public int MatrizIndicadoresId { get; set; }
+
     }
 
 }

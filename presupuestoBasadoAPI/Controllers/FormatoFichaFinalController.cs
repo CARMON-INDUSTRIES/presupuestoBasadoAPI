@@ -103,7 +103,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             foreach (var indicador in indicadores)
             {
-                // 👉 Evitar página en blanco al inicio
                 if (contador > 0)
                 {
                     document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));

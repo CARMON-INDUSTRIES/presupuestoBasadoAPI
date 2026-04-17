@@ -79,7 +79,7 @@ namespace presupuestoBasadoAPI.Controllers
                 .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.Id)
                 .FirstOrDefault();
-
+            
             if (analisis == null || !analisis.Alternativas.Any())
             {
                 Console.WriteLine($" [FormatoAnalisisInvolucrados] No se encontraron registros para el usuario: {userId}");
@@ -130,7 +130,7 @@ namespace presupuestoBasadoAPI.Controllers
             else
             {
                 encabezadoTabla.AddCell(new Cell().SetBorder(Border.NO_BORDER));
-                Console.WriteLine($"⚠️ No se encontró el emblema en: {emblemaPath}");
+                Console.WriteLine($"No se encontró el emblema en: {emblemaPath}");
             }
 
             document.Add(encabezadoTabla);
