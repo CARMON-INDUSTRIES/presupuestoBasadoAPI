@@ -144,9 +144,39 @@ namespace presupuestoBasadoAPI.Controllers
                 .OrderBy(f => f.Id)
                 .ToList();
 
+            int componenteIndex = 0;
+            int actividadIndex = 0;
+
             foreach (var fila in filasOrdenadas)
             {
-                tabla.AddCell(CeldaContenidoTabla(fila.Nivel, font));
+                string nivelFormateado = fila.Nivel;
+
+                if (!string.IsNullOrWhiteSpace(fila.Nivel))
+                {
+                    if (fila.Nivel.StartsWith("Componente"))
+                    {
+                        componenteIndex++;
+                        actividadIndex = 0;
+
+                        nivelFormateado = $"Componente {componenteIndex}";
+                    }
+                    else if (fila.Nivel.StartsWith("Actividad"))
+                    {
+                        actividadIndex++;
+
+                        nivelFormateado = $"Actividad {componenteIndex}.{actividadIndex}";
+                    }
+                    else if (fila.Nivel.StartsWith("Fin"))
+                    {
+                        nivelFormateado = "Fin";
+                    }
+                    else if (fila.Nivel.StartsWith("Propósito"))
+                    {
+                        nivelFormateado = "Propósito";
+                    }
+                }
+
+                tabla.AddCell(CeldaContenidoTabla(nivelFormateado, font));
                 tabla.AddCell(CeldaContenidoTabla(fila.ResumenNarrativo, font));
                 tabla.AddCell(CeldaContenidoTabla(fila.Indicadores, font));
                 tabla.AddCell(CeldaContenidoTabla(fila.Medios, font));

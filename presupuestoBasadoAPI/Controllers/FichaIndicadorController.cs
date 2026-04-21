@@ -101,9 +101,6 @@ namespace presupuestoBasadoAPI.Controllers
                         }).ToList()
                 }).ToList(),
 
-                // ❌ ELIMINADO COMPLETAMENTE
-                // MetasProgramadas = ...
-
                 LineasAccion = model.LineasAccion.Select(l => new LineaAccion
                 {
                     Acuerdo = l.Acuerdo,
@@ -116,7 +113,6 @@ namespace presupuestoBasadoAPI.Controllers
 
             _context.Fichas.Add(ficha);
 
-            // 🔥 RELACIONES CORRECTAS
             foreach (var ind in ficha.Indicadores)
             {
                 ind.FichaIndicador = ficha;
@@ -124,7 +120,7 @@ namespace presupuestoBasadoAPI.Controllers
                 foreach (var meta in ind.MetasProgramadas ?? [])
                 {
                     meta.IndicadorDetalle = ind;
-                    meta.FichaIndicador = ficha; // 🔥 CLAVE
+                    meta.FichaIndicador = ficha; 
                 }
             }
 
@@ -150,7 +146,6 @@ namespace presupuestoBasadoAPI.Controllers
             fichaExistente.ClaveIndicador = fichaActualizada.ClaveIndicador;
             fichaExistente.TipoIndicador = fichaActualizada.TipoIndicador;
 
-            // 🔥 limpiar todo correctamente
             _context.Set<MetaProgramada>().RemoveRange(
                 fichaExistente.Indicadores.SelectMany(i => i.MetasProgramadas)
             );
@@ -158,7 +153,6 @@ namespace presupuestoBasadoAPI.Controllers
             _context.Set<IndicadorDetalle>().RemoveRange(fichaExistente.Indicadores);
             _context.Set<LineaAccion>().RemoveRange(fichaExistente.LineasAccion);
 
-            // 🔥 recrear indicadores con metas
             fichaExistente.Indicadores = fichaActualizada.Indicadores ?? [];
 
             foreach (var ind in fichaExistente.Indicadores)
