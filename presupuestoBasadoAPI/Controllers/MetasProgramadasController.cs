@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using presupuestoBasadoAPI.Dto;
 using presupuestoBasadoAPI.Models;
 using System.Security.Claims;
 
@@ -40,14 +41,16 @@ namespace presupuestoBasadoAPI.Controllers
         }
 
         [HttpPut("actualizar-avances")]
-        public async Task<IActionResult> ActualizarAvances([FromBody] List<MetaProgramada> metas)
+        public async Task<IActionResult> ActualizarAvances(
+            [FromBody] List<ActualizarMetaDto> metas
+        )
         {
             if (metas == null || !metas.Any())
                 return BadRequest("No se recibieron metas");
 
             foreach (var meta in metas)
             {
-                var metaDb = await _context.Set<MetaProgramada>()
+                var metaDb = await _context.MetasProgramadas
                     .FirstOrDefaultAsync(m => m.Id == meta.Id);
 
                 if (metaDb != null)
@@ -58,7 +61,10 @@ namespace presupuestoBasadoAPI.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok("Avances actualizados");
+            return Ok(new
+            {
+                mensaje = "Avances actualizados correctamente"
+            });
         }
     }
 }
