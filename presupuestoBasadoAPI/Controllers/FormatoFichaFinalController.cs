@@ -222,6 +222,29 @@ namespace presupuestoBasadoAPI.Controllers
             return File(ms.ToArray(), "application/pdf", $"Fichas_{ficha.Id}.pdf");
         }
 
+        [HttpGet("indicadores")]
+        public async Task<IActionResult> ObtenerIndicadores()
+        {
+            var userId = GetUserId();
+
+            var ficha = await _context.Fichas
+                .Include(f => f.Indicadores)
+                .Where(f => f.UserId == userId)
+                .OrderByDescending(f => f.Id)
+                .FirstOrDefaultAsync();
+
+            if (ficha == null)
+                return NotFound();
+
+            return Ok(ficha.Indicadores.Select((x, i) => new
+            {
+                id = x.Id,
+                nombre = string.IsNullOrWhiteSpace(x.ResultadoEsperado)
+                    ? $"Ficha {i + 1}"
+                    : x.ResultadoEsperado
+            }));
+        }
+
         // === Helpers ===
         private static Paragraph SeccionTitulo(string texto, Color colorFondo)
         {

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <Using Include="Microsoft.Extensions.Configuration" />
+    <Compile Include="../../presupuestoBasadoAPI/Services/IAService.cs" Link="IAService.cs" />
+    <Compile Include="../../presupuestoBasadoAPI/Interfaces/IIAService.cs" Link="IIAService.cs" />
+    <Compile Include="../../presupuestoBasadoAPI/Dto/IAConvertirTextoDto.cs" Link="IAConvertirTextoDto.cs" />
+  </ItemGroup>
+</Project>
